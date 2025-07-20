@@ -366,7 +366,7 @@ async def get_system_info_endpoint():
 
 @api_router.post("/scan-file")
 @limiter.limit("5/minute")
-async def scan_file_endpoint(request, file: UploadFile = File(...)):
+async def scan_file_endpoint(request: Request, file: UploadFile = File(...)):
     """Scan uploaded file for malware and threats"""
     try:
         if file.size > 50 * 1024 * 1024:  # 50MB limit
