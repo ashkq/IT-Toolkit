@@ -311,6 +311,12 @@ def scan_ports(target: str, ports: List[int]) -> dict:
         open_ports = []
         closed_ports = []
         
+        # Resolve hostname if needed
+        try:
+            target_ip = socket.gethostbyname(target)
+        except socket.gaierror:
+            return {"error": f"Could not resolve hostname: {target}"}
+        
         # Common service names
         service_names = {
             21: "FTP", 22: "SSH", 23: "Telnet", 25: "SMTP", 53: "DNS",
@@ -320,21 +326,26 @@ def scan_ports(target: str, ports: List[int]) -> dict:
         }
         
         for port in ports:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(1)
-            result = sock.connect_ex((target, port))
-            
-            if result == 0:
-                service = service_names.get(port, "Unknown")
-                open_ports.append({
-                    "port": port,
-                    "service": service,
-                    "status": "open"
-                })
-            else:
+            try:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(2)  # Increased timeout slightly
+                result = sock.connect_ex((target_ip, port))
+                
+                if result == 0:
+                    service = service_names.get(port, "Unknown")
+                    open_ports.append({
+                        "port": port,
+                        "service": service,
+                        "status": "open"
+                    })
+                else:
+                    closed_ports.append(port)
+                
+                sock.close()
+            except Exception as e:
+                # If individual port scan fails, mark as closed
                 closed_ports.append(port)
-            
-            sock.close()
+                continue
         
         end_time = datetime.now()
         duration = (end_time - start_time).total_seconds()
@@ -345,7 +356,7 @@ def scan_ports(target: str, ports: List[int]) -> dict:
             "scan_duration": duration
         }
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": f"Port scan failed: {str(e)}"}
 
 # API Routes
 @api_router.get("/system-info", response_model=SystemInfo)
