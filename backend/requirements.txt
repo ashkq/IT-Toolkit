@@ -23,3 +23,13 @@ numpy>=1.26.0
 python-multipart>=0.0.9
 jq>=1.6.0
 typer>=0.9.0
+
+# Security Toolkit Dependencies
+psutil>=5.9.0
+socket
+platform
+hashlib
+ssl
+urllib3>=2.0.0
+vt-py>=0.17.5
+google-api-python-client>=2.0.0
