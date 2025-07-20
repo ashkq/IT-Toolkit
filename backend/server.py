@@ -411,7 +411,7 @@ async def scan_file_endpoint(request, file: UploadFile = File(...)):
 
 @api_router.post("/check-website")
 @limiter.limit("10/minute")
-async def check_website_endpoint(request, url: str = Form(...)):
+async def check_website_endpoint(request: Request, url: str = Form(...)):
     """Check website security and reputation"""
     try:
         # Check cache first
