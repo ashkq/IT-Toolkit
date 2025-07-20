@@ -404,15 +404,23 @@ async def check_website_endpoint(request, url: str = Form(...)):
         # Basic security check
         security_data = check_website_security(url)
         
+        # Handle errors in security check
+        if 'error' in security_data:
+            raise HTTPException(status_code=400, detail=f"Failed to check website: {security_data['error']}")
+        
         # Safe Browsing check
         safe_browsing_result = None
         sb_api_key = os.getenv('GOOGLE_SAFEBROWSING_API_KEY')
         if sb_api_key:
-            safe_browsing_result = await check_safe_browsing(url, sb_api_key)
-            
-            # Adjust security score based on Safe Browsing
-            if safe_browsing_result.get('safe') is False:
-                security_data['security_score'] = max(0, security_data.get('security_score', 0) - 50)
+            try:
+                safe_browsing_result = await check_safe_browsing(url, sb_api_key)
+                
+                # Adjust security score based on Safe Browsing
+                if safe_browsing_result and safe_browsing_result.get('safe') is False:
+                    security_data['security_score'] = max(0, security_data.get('security_score', 0) - 50)
+            except Exception as e:
+                # Don't fail the entire request if Safe Browsing fails
+                safe_browsing_result = {"error": str(e)}
         
         # Create security report
         security_report = SecurityReport(
@@ -433,6 +441,8 @@ async def check_website_endpoint(request, url: str = Form(...)):
         )
         
         return security_report
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
