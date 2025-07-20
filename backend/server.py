@@ -460,6 +460,9 @@ async def scan_ports_endpoint(request, target: str = Form(...), ports: str = For
         if len(port_list) > 100:
             raise HTTPException(status_code=400, detail="Too many ports (max 100)")
         
+        if not port_list:
+            raise HTTPException(status_code=400, detail="No valid ports specified")
+        
         # Run port scan in thread pool
         def _scan():
             return scan_ports(target, port_list)
@@ -482,6 +485,8 @@ async def scan_ports_endpoint(request, target: str = Form(...), ports: str = For
         await db.port_scans.insert_one(port_scan_result.dict())
         
         return port_scan_result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
