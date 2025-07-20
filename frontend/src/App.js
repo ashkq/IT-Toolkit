@@ -44,7 +44,7 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            🔒 IT Security & Diagnostic Toolkit
+            🛡️ IT Security & Diagnostic Toolkit
           </h1>
           <p className="text-gray-400">Complete security analysis and system diagnostics</p>
         </header>
