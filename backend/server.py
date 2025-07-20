@@ -241,11 +241,12 @@ def check_website_security(url: str) -> dict:
                             'notAfter': cert['notAfter'],
                             'notBefore': cert['notBefore']
                         }
-            except Exception:
-                ssl_info = {'error': 'Could not retrieve SSL certificate'}
+            except Exception as e:
+                ssl_info = {'error': f'Could not retrieve SSL certificate: {str(e)}'}
         
-        # HTTP Headers
+        # HTTP Headers - normalize to lowercase for checking
         headers = dict(response.headers)
+        headers_lower = {k.lower(): v for k, v in headers.items()}
         
         # Redirect history
         redirects = [resp.url for resp in response.history]
@@ -254,13 +255,13 @@ def check_website_security(url: str) -> dict:
         security_score = 0
         if https_valid:
             security_score += 30
-        if 'strict-transport-security' in headers:
+        if 'strict-transport-security' in headers_lower:
             security_score += 20
-        if 'x-frame-options' in headers:
+        if 'x-frame-options' in headers_lower:
             security_score += 15
-        if 'x-content-type-options' in headers:
+        if 'x-content-type-options' in headers_lower:
             security_score += 15
-        if 'content-security-policy' in headers:
+        if 'content-security-policy' in headers_lower:
             security_score += 20
         
         return {
@@ -271,8 +272,14 @@ def check_website_security(url: str) -> dict:
             'security_score': security_score,
             'status_code': response.status_code
         }
+    except requests.exceptions.Timeout:
+        return {'error': 'Request timeout - website took too long to respond'}
+    except requests.exceptions.ConnectionError:
+        return {'error': 'Connection failed - unable to reach website'}
+    except requests.exceptions.RequestException as e:
+        return {'error': f'Request failed: {str(e)}'}
     except Exception as e:
-        return {'error': str(e)}
+        return {'error': f'Unexpected error: {str(e)}'}
 
 async def check_safe_browsing(url: str, api_key: str) -> dict:
     """Check URL with Google Safe Browsing API"""
