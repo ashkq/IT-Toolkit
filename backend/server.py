@@ -999,7 +999,7 @@ async def get_traceroute_history():
 # Health check
 @api_router.get("/")
 async def root():
-    return {"message": "IT Security & Diagnostic Toolkit API", "status": "running"}
+    return {"message": "🦸‍♂️IT Hero 🛠 API", "description": "IT Security & Diagnostic Toolkit", "status": "running"}
 
 # Include the router in the main app
 app.include_router(api_router)
