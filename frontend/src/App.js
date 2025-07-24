@@ -44,10 +44,11 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            🛡️ IT Security & Diagnostic Toolkit
+          <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            🦸‍♂️IT Hero 🛠
           </h1>
-          <p className="text-gray-400">Complete security analysis and system diagnostics</p>
+          <p className="text-xl text-gray-400 mb-2">IT Security & Diagnostic Toolkit</p>
+          <p className="text-sm text-gray-500">Your Complete IT Superhero Solution</p>
         </header>
 
         {/* Tab Navigation */}
