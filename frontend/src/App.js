@@ -1365,6 +1365,7 @@ const PortScannerTab = () => {
               <thead>
                 <tr className="border-b border-gray-700">
                   <th className="text-left py-2">Target</th>
+                  <th className="text-left py-2">Port Type</th>
                   <th className="text-left py-2">Open Ports</th>
                   <th className="text-left py-2">Duration</th>
                   <th className="text-left py-2">Date</th>
@@ -1374,6 +1375,7 @@ const PortScannerTab = () => {
                 {history.map((scan, index) => (
                   <tr key={index} className="border-b border-gray-700">
                     <td className="py-2">{scan.target}</td>
+                    <td className="py-2 text-blue-400">{scan.port_type || 'Common Ports'}</td>
                     <td className="py-2 text-green-400">{scan.open_ports.length}</td>
                     <td className="py-2">{scan.scan_duration.toFixed(2)}s</td>
                     <td className="py-2">{new Date(scan.timestamp).toLocaleDateString()}</td>
