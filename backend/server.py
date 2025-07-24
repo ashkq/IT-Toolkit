@@ -996,21 +996,6 @@ async def traceroute_endpoint(request: Request, target: str = Form(...), max_hop
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.post("/subnet-calculator")
-async def subnet_calculator_endpoint(request: Request, ip_address: str = Form(...), subnet_mask: str = Form(...)):
-    """Calculate subnet information"""
-    try:
-        result = calculate_subnet(ip_address, subnet_mask)
-        
-        if 'error' in result:
-            raise HTTPException(status_code=400, detail=result['error'])
-        
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 @api_router.post("/generate-password")
 async def generate_password_endpoint(
     request: Request,
