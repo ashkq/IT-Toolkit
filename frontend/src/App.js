@@ -665,9 +665,11 @@ const NetworkUtilitiesTab = ({ systemInfo }) => {
       {systemInfo && (
         <div className="bg-gray-800 rounded-lg p-6">
           <h3 className="text-xl font-bold mb-4 text-green-400">📡 Network Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
             <div className="space-y-2">
               <div><strong>Local IP:</strong> {systemInfo.local_ip}</div>
+            </div>
+            <div className="space-y-2">
               <div><strong>Public IP:</strong> {systemInfo.public_ip || "N/A"}</div>
             </div>
           </div>
