@@ -717,7 +717,62 @@ const NetworkSpeedDashboard = () => {
   );
 };
 
-// System Info Tab Component
+// Network Utilities Tab Component (dedicated page)
+const NetworkUtilitiesTab = ({ systemInfo }) => {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">🌐 Network Utilities</h2>
+      
+      {/* Network Information Section */}
+      {systemInfo && (
+        <div className="bg-gray-800 rounded-lg p-6">
+          <h3 className="text-xl font-bold mb-4 text-green-400">📡 Network Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <div><strong>Local IP:</strong> {systemInfo.local_ip}</div>
+              <div><strong>Public IP:</strong> {systemInfo.public_ip || "N/A"}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Network Tools Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Quick Ping Test */}
+        <QuickPingTester />
+        
+        {/* Network Speed Visualizer */}
+        <NetworkSpeedVisualizer />
+        
+        {/* Password Generator */}
+        <PasswordGenerator />
+      </div>
+
+      {/* Advanced Network Tools */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Ping Tester */}
+        <div className="bg-gray-800 rounded-lg p-6">
+          <h3 className="text-xl font-bold mb-4 text-green-400">🏓 Advanced Ping Tester</h3>
+          <PingTesterFull />
+        </div>
+
+        {/* Traceroute */}
+        <div className="bg-gray-800 rounded-lg p-6">
+          <h3 className="text-xl font-bold mb-4 text-purple-400">🗺️ Traceroute Visualizer</h3>
+          <TracerouteVisualizer />
+        </div>
+      </div>
+
+      {/* Network Speed Dashboard */}
+      <div className="bg-gray-800 rounded-lg p-6">
+        <h3 className="text-lg md:text-xl font-bold mb-4 text-blue-400">🚀 Network Speed Analyzer</h3>
+        <NetworkSpeedDashboard />
+      </div>
+    </div>
+  );
+};
+
+// System Info Tab Component (updated to remove network tools)
 const SystemInfoTab = ({ systemInfo, loading, error, onRefresh }) => {
   if (loading) {
     return (
