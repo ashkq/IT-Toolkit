@@ -244,43 +244,51 @@ const PasswordGenerator = () => {
   };
 
   return (
-    <div className="bg-gray-700 rounded-lg p-4">
-      <h4 className="font-bold mb-2 text-orange-400">🔐 Password Generator</h4>
-      <div className="space-y-2">
-        <div className="flex items-center space-x-1">
-          <span className="text-xs">Length:</span>
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">Password Length</label>
           <input
             type="number"
             value={length}
             onChange={(e) => setLength(parseInt(e.target.value))}
             min="4"
             max="32"
-            className="flex-1 bg-gray-600 border border-gray-500 rounded px-1 py-1 text-xs text-white"
+            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
           />
         </div>
         
-        <button
-          onClick={generatePassword}
-          disabled={generating}
-          className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 px-2 py-1 rounded text-xs transition-colors"
-        >
-          {generating ? '⏳' : '🎲 Generate'}
-        </button>
-        
-        {password && (
-          <div className="space-y-1">
-            <div className="bg-gray-600 rounded px-2 py-1 text-xs font-mono break-all">
-              {password}
-            </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">Action</label>
+          <button
+            onClick={generatePassword}
+            disabled={generating}
+            className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 px-3 py-2 rounded transition-colors"
+          >
+            {generating ? '⏳ Generating...' : '🎲 Generate Password'}
+          </button>
+        </div>
+      </div>
+      
+      {password && (
+        <div className="bg-gray-700 rounded-lg p-4">
+          <label className="block text-sm font-medium mb-2">Generated Password</label>
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={password}
+              readOnly
+              className="flex-1 bg-gray-600 border border-gray-500 rounded px-3 py-2 text-white font-mono text-sm"
+            />
             <button
               onClick={copyToClipboard}
-              className="w-full bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs transition-colors"
+              className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded transition-colors"
             >
-              {copied ? '✅ Copied!' : '📋 Copy'}
+              {copied ? '✅' : '📋'}
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
