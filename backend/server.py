@@ -799,7 +799,7 @@ async def check_website_endpoint(request: Request, url: str = Form(...)):
 
 @api_router.post("/scan-ports")
 @limiter.limit("3/minute")
-async def scan_ports_endpoint(request: Request, target: str = Form(...), ports: str = Form(...)):
+async def scan_ports_endpoint(request: Request, target: str = Form(...), ports: str = Form(...), port_type: str = Form("Common Ports")):
     """Scan network ports on target host"""
     try:
         # Parse ports
