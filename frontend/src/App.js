@@ -677,12 +677,16 @@ const NetworkUtilitiesTab = ({ systemInfo }) => {
       )}
 
       {/* Network Tools Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Quick Ping Test */}
-        <QuickPingTester />
-        
-        {/* Network Speed Visualizer */}
-        <NetworkSpeedVisualizer />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+        {/* WiFi Speed Test */}
+        <div className="bg-gray-700 rounded-lg p-4">
+          <h4 className="font-bold text-center mb-3 text-blue-400">📶 WiFi Speed Test</h4>
+          <div className="text-center">
+            <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm transition-colors">
+              ⚡ Start
+            </button>
+          </div>
+        </div>
         
         {/* Password Generator */}
         <PasswordGenerator />
