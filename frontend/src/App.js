@@ -89,6 +89,633 @@ const Dashboard = () => {
   );
 };
 
+// Network Tools Section Component
+const NetworkToolsSection = () => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Quick Ping Test */}
+      <QuickPingTester />
+      
+      {/* Network Speed Visualizer */}
+      <NetworkSpeedVisualizer />
+      
+      {/* Subnet Calculator */}
+      <SubnetCalculator />
+      
+      {/* Password Generator */}
+      <PasswordGenerator />
+    </div>
+  );
+};
+
+// Quick Ping Tester Component
+const QuickPingTester = () => {
+  const [pingResult, setPingResult] = useState(null);
+  const [pinging, setPinging] = useState(false);
+
+  const testPing = async () => {
+    setPinging(true);
+    try {
+      const formData = new FormData();
+      formData.append('target', '8.8.8.8');
+      formData.append('count', '4');
+
+      const response = await axios.post(`${API}/ping`, formData);
+      setPingResult(response.data);
+    } catch (err) {
+      console.error('Ping test failed:', err);
+      setPingResult({ error: 'Ping test failed' });
+    } finally {
+      setPinging(false);
+    }
+  };
+
+  return (
+    <div className="bg-gray-700 rounded-lg p-4 text-center">
+      <h4 className="font-bold mb-2 text-green-400">📡 Quick Ping</h4>
+      <button
+        onClick={testPing}
+        disabled={pinging}
+        className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-3 py-1 rounded text-sm transition-colors mb-2"
+      >
+        {pinging ? '⏳ Pinging...' : '🏓 Ping 8.8.8.8'}
+      </button>
+      {pingResult && !pingResult.error && (
+        <div className="text-xs">
+          <div className="text-green-400">{pingResult.response_time?.toFixed(1)}ms</div>
+          <div className="text-gray-400">{pingResult.packet_loss}% loss</div>
+        </div>
+      )}
+      {pingResult?.error && (
+        <div className="text-xs text-red-400">{pingResult.error}</div>
+      )}
+    </div>
+  );
+};
+
+// Network Speed Visualizer Component
+const NetworkSpeedVisualizer = () => {
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [speedData, setSpeedData] = useState({ download: 0, upload: 0 });
+
+  const simulateSpeedTest = () => {
+    setIsAnimating(true);
+    
+    // Simulate speed test with random values
+    setTimeout(() => {
+      setSpeedData({
+        download: Math.random() * 100 + 20,
+        upload: Math.random() * 50 + 10
+      });
+      setIsAnimating(false);
+    }, 3000);
+  };
+
+  return (
+    <div className="bg-gray-700 rounded-lg p-4 text-center">
+      <h4 className="font-bold mb-2 text-blue-400">🚀 Speed Test</h4>
+      <button
+        onClick={simulateSpeedTest}
+        disabled={isAnimating}
+        className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-3 py-1 rounded text-sm transition-colors mb-2"
+      >
+        {isAnimating ? '⏳ Testing...' : '📊 Test Speed'}
+      </button>
+      
+      {isAnimating && (
+        <div className="flex justify-center space-x-1 mb-2">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="w-2 h-6 bg-blue-500 rounded animate-pulse"
+              style={{ animationDelay: `${i * 0.2}s` }}
+            ></div>
+          ))}
+        </div>
+      )}
+      
+      {!isAnimating && speedData.download > 0 && (
+        <div className="text-xs">
+          <div className="text-green-400">↓ {speedData.download.toFixed(1)} Mbps</div>
+          <div className="text-yellow-400">↑ {speedData.upload.toFixed(1)} Mbps</div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Subnet Calculator Component
+const SubnetCalculator = () => {
+  const [ip, setIp] = useState('192.168.1.1');
+  const [mask, setMask] = useState('24');
+  const [result, setResult] = useState(null);
+  const [calculating, setCalculating] = useState(false);
+
+  const calculateSubnet = async () => {
+    if (!ip || !mask) return;
+    
+    setCalculating(true);
+    try {
+      const formData = new FormData();
+      formData.append('ip_address', ip);
+      formData.append('subnet_mask', mask);
+
+      const response = await axios.post(`${API}/subnet-calculator`, formData);
+      setResult(response.data);
+    } catch (err) {
+      console.error('Subnet calculation failed:', err);
+      setResult({ error: 'Calculation failed' });
+    } finally {
+      setCalculating(false);
+    }
+  };
+
+  return (
+    <div className="bg-gray-700 rounded-lg p-4">
+      <h4 className="font-bold mb-2 text-purple-400">🔢 Subnet Calc</h4>
+      <div className="space-y-2">
+        <input
+          type="text"
+          value={ip}
+          onChange={(e) => setIp(e.target.value)}
+          placeholder="IP Address"
+          className="w-full bg-gray-600 border border-gray-500 rounded px-2 py-1 text-xs text-white"
+        />
+        <input
+          type="text"
+          value={mask}
+          onChange={(e) => setMask(e.target.value)}
+          placeholder="CIDR (24)"
+          className="w-full bg-gray-600 border border-gray-500 rounded px-2 py-1 text-xs text-white"
+        />
+        <button
+          onClick={calculateSubnet}
+          disabled={calculating || !ip || !mask}
+          className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 px-2 py-1 rounded text-xs transition-colors"
+        >
+          {calculating ? '⏳' : '🔢 Calculate'}
+        </button>
+        
+        {result && !result.error && (
+          <div className="text-xs space-y-1">
+            <div className="text-green-400">Network: {result.network_address}</div>
+            <div className="text-yellow-400">Hosts: {result.usable_hosts}</div>
+          </div>
+        )}
+        {result?.error && (
+          <div className="text-xs text-red-400">{result.error}</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Password Generator Component
+const PasswordGenerator = () => {
+  const [password, setPassword] = useState('');
+  const [length, setLength] = useState(12);
+  const [generating, setGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const generatePassword = async () => {
+    setGenerating(true);
+    try {
+      const formData = new FormData();
+      formData.append('length', length.toString());
+      formData.append('include_uppercase', 'true');
+      formData.append('include_lowercase', 'true');
+      formData.append('include_numbers', 'true');
+      formData.append('include_special', 'true');
+
+      const response = await axios.post(`${API}/generate-password`, formData);
+      setPassword(response.data.password);
+    } catch (err) {
+      console.error('Password generation failed:', err);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const copyToClipboard = async () => {
+    if (password) {
+      await navigator.clipboard.writeText(password);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div className="bg-gray-700 rounded-lg p-4">
+      <h4 className="font-bold mb-2 text-orange-400">🔐 Password Gen</h4>
+      <div className="space-y-2">
+        <div className="flex items-center space-x-1">
+          <span className="text-xs">Length:</span>
+          <input
+            type="number"
+            value={length}
+            onChange={(e) => setLength(parseInt(e.target.value))}
+            min="4"
+            max="32"
+            className="flex-1 bg-gray-600 border border-gray-500 rounded px-1 py-1 text-xs text-white"
+          />
+        </div>
+        
+        <button
+          onClick={generatePassword}
+          disabled={generating}
+          className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 px-2 py-1 rounded text-xs transition-colors"
+        >
+          {generating ? '⏳' : '🎲 Generate'}
+        </button>
+        
+        {password && (
+          <div className="space-y-1">
+            <div className="bg-gray-600 rounded px-2 py-1 text-xs font-mono break-all">
+              {password}
+            </div>
+            <button
+              onClick={copyToClipboard}
+              className="w-full bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs transition-colors"
+            >
+              {copied ? '✅ Copied!' : '📋 Copy'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Network Analyzer Tab Component  
+const NetworkAnalyzerTab = () => {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">🔍 Network Analyzer Dashboard</h2>
+      
+      {/* Main Diagnostic Tools */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <PingTesterFull />
+        <TracerouteVisualizer />
+      </div>
+      
+      {/* Speed Test Visualization */}
+      <div className="bg-gray-800 rounded-lg p-6">
+        <h3 className="text-xl font-bold mb-4 text-blue-400">🚀 Network Speed Analyzer</h3>
+        <NetworkSpeedDashboard />
+      </div>
+    </div>
+  );
+};
+
+// Full-featured Ping Tester Component
+const PingTesterFull = () => {
+  const [target, setTarget] = useState('8.8.8.8');
+  const [count, setCount] = useState(4);
+  const [pinging, setPinging] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+
+  const runPingTest = async () => {
+    if (!target) return;
+
+    setPinging(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('target', target);
+      formData.append('count', count.toString());
+
+      const response = await axios.post(`${API}/ping`, formData);
+      setResult(response.data);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Ping test failed');
+    } finally {
+      setPinging(false);
+    }
+  };
+
+  return (
+    <div className="bg-gray-800 rounded-lg p-6">
+      <h3 className="text-xl font-bold mb-4 text-green-400">📡 Ping Test</h3>
+      
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Target Host</label>
+            <input
+              type="text"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              placeholder="8.8.8.8 or google.com"
+              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Ping Count</label>
+            <select
+              value={count}
+              onChange={(e) => setCount(parseInt(e.target.value))}
+              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+            >
+              <option value={1}>1 ping</option>
+              <option value={4}>4 pings</option>
+              <option value={8}>8 pings</option>
+              <option value={10}>10 pings</option>
+            </select>
+          </div>
+        </div>
+        
+        <button
+          onClick={runPingTest}
+          disabled={!target || pinging}
+          className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-6 py-2 rounded transition-colors"
+        >
+          {pinging ? '⏳ Pinging...' : '🏓 Start Ping Test'}
+        </button>
+      </div>
+
+      {error && (
+        <div className="mt-4 bg-red-900 border border-red-600 rounded-lg p-4">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      {result && (
+        <div className="mt-4 bg-gray-700 rounded-lg p-4">
+          <h4 className="font-bold mb-2">Ping Results for {result.target}</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div>
+              <div className="text-2xl font-bold text-green-400">{result.response_time?.toFixed(1) || 'N/A'}</div>
+              <div className="text-sm text-gray-400">Avg Response (ms)</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-blue-400">{result.packets_sent}</div>
+              <div className="text-sm text-gray-400">Packets Sent</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-cyan-400">{result.packets_received}</div>
+              <div className="text-sm text-gray-400">Packets Received</div>
+            </div>
+            <div>
+              <div className={`text-2xl font-bold ${result.packet_loss === 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {result.packet_loss}%
+              </div>
+              <div className="text-sm text-gray-400">Packet Loss</div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Traceroute Visualizer Component
+const TracerouteVisualizer = () => {
+  const [target, setTarget] = useState('google.com');
+  const [maxHops, setMaxHops] = useState(15);
+  const [tracing, setTracing] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+
+  const runTraceroute = async () => {
+    if (!target) return;
+
+    setTracing(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('target', target);
+      formData.append('max_hops', maxHops.toString());
+
+      const response = await axios.post(`${API}/traceroute`, formData);
+      setResult(response.data);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Traceroute failed');
+    } finally {
+      setTracing(false);
+    }
+  };
+
+  return (
+    <div className="bg-gray-800 rounded-lg p-6">
+      <h3 className="text-xl font-bold mb-4 text-purple-400">🗺️ Traceroute Visualizer</h3>
+      
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Target Host</label>
+            <input
+              type="text"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              placeholder="google.com or 8.8.8.8"
+              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Max Hops</label>
+            <select
+              value={maxHops}
+              onChange={(e) => setMaxHops(parseInt(e.target.value))}
+              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+            >
+              <option value={10}>10 hops</option>
+              <option value={15}>15 hops</option>
+              <option value={20}>20 hops</option>
+              <option value={30}>30 hops</option>
+            </select>
+          </div>
+        </div>
+        
+        <button
+          onClick={runTraceroute}
+          disabled={!target || tracing}
+          className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 px-6 py-2 rounded transition-colors"
+        >
+          {tracing ? '⏳ Tracing route...' : '🗺️ Trace Route'}
+        </button>
+      </div>
+
+      {error && (
+        <div className="mt-4 bg-red-900 border border-red-600 rounded-lg p-4">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      {result && (
+        <div className="mt-4">
+          <h4 className="font-bold mb-4">Route to {result.target} ({result.total_hops} hops)</h4>
+          
+          {/* Visual Route Display */}
+          <div className="bg-gray-700 rounded-lg p-4 mb-4">
+            <div className="flex items-center space-x-2 overflow-x-auto pb-2">
+              <div className="flex-shrink-0 w-16 h-8 bg-green-600 rounded flex items-center justify-center text-xs font-bold">
+                START
+              </div>
+              {result.hops.map((hop, index) => (
+                <React.Fragment key={index}>
+                  <div className="flex-shrink-0 w-2 h-0.5 bg-gray-400"></div>
+                  <div className="flex-shrink-0 w-12 h-8 bg-blue-600 rounded flex items-center justify-center text-xs font-bold">
+                    {hop.hop}
+                  </div>
+                </React.Fragment>
+              ))}
+              <div className="flex-shrink-0 w-2 h-0.5 bg-gray-400"></div>
+              <div className="flex-shrink-0 w-16 h-8 bg-red-600 rounded flex items-center justify-center text-xs font-bold">
+                TARGET
+              </div>
+            </div>
+          </div>
+          
+          {/* Hop Details */}
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {result.hops.map((hop, index) => (
+              <div key={index} className="bg-gray-700 rounded p-3 flex justify-between items-center">
+                <div>
+                  <span className="font-bold text-blue-400">Hop {hop.hop}:</span>
+                  <span className="ml-2 font-mono text-sm">{hop.ip}</span>
+                  {hop.hostname && (
+                    <span className="ml-2 text-gray-400 text-sm">({hop.hostname})</span>
+                  )}
+                </div>
+                <div className="text-right">
+                  {hop.avg_time !== null ? (
+                    <span className="text-green-400 font-bold">{hop.avg_time?.toFixed(1)}ms</span>
+                  ) : (
+                    <span className="text-red-400">*</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Network Speed Dashboard Component
+const NetworkSpeedDashboard = () => {
+  const [isRunning, setIsRunning] = useState(false);
+  const [results, setResults] = useState({ download: 0, upload: 0, ping: 0 });
+  const [progress, setProgress] = useState(0);
+
+  const runSpeedTest = () => {
+    setIsRunning(true);
+    setProgress(0);
+    setResults({ download: 0, upload: 0, ping: 0 });
+
+    // Simulate speed test with animated progress
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev + 2;
+        
+        if (newProgress >= 100) {
+          clearInterval(interval);
+          setResults({
+            download: Math.random() * 150 + 50,
+            upload: Math.random() * 75 + 25,
+            ping: Math.random() * 30 + 10
+          });
+          setIsRunning(false);
+          return 100;
+        }
+        
+        return newProgress;
+      });
+    }, 100);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <button
+          onClick={runSpeedTest}
+          disabled={isRunning}
+          className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-8 py-3 rounded-lg text-lg font-bold transition-colors"
+        >
+          {isRunning ? '⏳ Testing...' : '🚀 Start Speed Test'}
+        </button>
+      </div>
+
+      {isRunning && (
+        <div className="bg-gray-700 rounded-lg p-6">
+          <div className="text-center mb-4">
+            <div className="text-2xl font-bold text-blue-400">{progress}%</div>
+            <div className="w-full bg-gray-600 rounded-full h-4 mt-2">
+              <div 
+                className="bg-blue-500 h-4 rounded-full transition-all duration-100"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          {/* Animated Speed Bars */}
+          <div className="flex justify-center space-x-4">
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="w-4 bg-blue-500 rounded animate-pulse"
+                style={{ 
+                  height: `${Math.random() * 40 + 20}px`,
+                  animationDelay: `${i * 0.2}s`
+                }}
+              ></div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!isRunning && results.download > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-gray-700 rounded-lg p-6 text-center">
+            <div className="text-3xl font-bold text-green-400 mb-2">
+              {results.download.toFixed(1)}
+            </div>
+            <div className="text-gray-400">Download (Mbps)</div>
+            <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
+              <div 
+                className="bg-green-500 h-2 rounded-full"
+                style={{ width: `${Math.min(results.download / 2, 100)}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-700 rounded-lg p-6 text-center">
+            <div className="text-3xl font-bold text-yellow-400 mb-2">
+              {results.upload.toFixed(1)}
+            </div>
+            <div className="text-gray-400">Upload (Mbps)</div>
+            <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
+              <div 
+                className="bg-yellow-500 h-2 rounded-full"
+                style={{ width: `${Math.min(results.upload / 1.5, 100)}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-700 rounded-lg p-6 text-center">
+            <div className="text-3xl font-bold text-cyan-400 mb-2">
+              {results.ping.toFixed(0)}
+            </div>
+            <div className="text-gray-400">Ping (ms)</div>
+            <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
+              <div 
+                className="bg-cyan-500 h-2 rounded-full"
+                style={{ width: `${Math.max(100 - results.ping * 2, 10)}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // System Info Tab Component
 const SystemInfoTab = ({ systemInfo, loading, error, onRefresh }) => {
   if (loading) {
