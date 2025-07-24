@@ -634,7 +634,20 @@ const NetworkSpeedDashboard = () => {
   );
 };
 
-// Network Utilities Tab Component (dedicated page)
+// Traceroute Tab Component
+const TracerouteTab = () => {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">🗺️ Traceroute Visualizer</h2>
+      
+      <div className="bg-gray-800 rounded-lg p-6">
+        <TracerouteVisualizer />
+      </div>
+    </div>
+  );
+};
+
+// Network Utilities Tab Component (reorganized)
 const NetworkUtilitiesTab = ({ systemInfo }) => {
   return (
     <div className="space-y-6">
@@ -655,35 +668,22 @@ const NetworkUtilitiesTab = ({ systemInfo }) => {
         </div>
       )}
 
-      {/* Network Tools Grid - Reorganized */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* WiFi Speed Test */}
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h4 className="font-bold text-center mb-3 text-blue-400">📶 WiFi Speed Test</h4>
-          <div className="text-center">
-            <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm transition-colors">
-              ⚡ Start
-            </button>
-          </div>
-        </div>
-        
-        {/* Password Generator */}
-        <PasswordGenerator />
-      </div>
-
-      {/* Connection Testing Tools */}
-      <div className="bg-gray-800 rounded-lg p-6">
-        <h3 className="text-xl font-bold mb-4 text-green-400">🏓 Connection Testing</h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PingTesterFull />
-          <TracerouteVisualizer />
-        </div>
-      </div>
-
-      {/* Network Speed Dashboard */}
+      {/* WiFi Speed Test */}
       <div className="bg-gray-800 rounded-lg p-6">
         <h3 className="text-lg md:text-xl font-bold mb-4 text-blue-400">📶 WiFi Speed Test</h3>
         <NetworkSpeedDashboard />
+      </div>
+
+      {/* Password Generator */}
+      <div className="bg-gray-800 rounded-lg p-6">
+        <h3 className="text-xl font-bold mb-4 text-orange-400">🔐 Password Generator</h3>
+        <PasswordGenerator />
+      </div>
+
+      {/* Ping Connection Test */}
+      <div className="bg-gray-800 rounded-lg p-6">
+        <h3 className="text-xl font-bold mb-4 text-green-400">📡 Ping Connection Test</h3>
+        <PingTesterFull />
       </div>
     </div>
   );
