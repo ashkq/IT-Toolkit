@@ -79,6 +79,7 @@ const Dashboard = () => {
               onRefresh={fetchSystemInfo} 
             />
           )}
+          {activeTab === 'network-analyzer' && <NetworkAnalyzerTab />}
           {activeTab === 'malware-scanner' && <MalwareScannerTab />}
           {activeTab === 'website-checker' && <WebsiteCheckerTab />}
           {activeTab === 'port-scanner' && <PortScannerTab />}
