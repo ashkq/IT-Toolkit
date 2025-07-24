@@ -82,6 +82,7 @@ const Dashboard = () => {
               onRefresh={fetchSystemInfo} 
             />
           )}
+          {activeTab === 'network-utilities' && <NetworkUtilitiesTab systemInfo={systemInfo} />}
           {activeTab === 'network-analyzer' && <NetworkAnalyzerTab />}
           {activeTab === 'malware-scanner' && <MalwareScannerTab />}
           {activeTab === 'website-checker' && <WebsiteCheckerTab />}
