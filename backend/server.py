@@ -829,7 +829,8 @@ async def scan_ports_endpoint(request: Request, target: str = Form(...), ports: 
             target=target,
             open_ports=scan_data['open_ports'],
             closed_ports=scan_data['closed_ports'],
-            scan_duration=scan_data['scan_duration']
+            scan_duration=scan_data['scan_duration'],
+            port_type=port_type
         )
         
         # Store in database
