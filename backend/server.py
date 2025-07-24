@@ -469,26 +469,45 @@ def _socket_ping(target_ip: str, count: int) -> dict:
         packets_received = 0
         response_times = []
         
+        # Try multiple ports to increase success rate
+        test_ports = [80, 443, 53, 22]  # HTTP, HTTPS, DNS, SSH
+        
         for i in range(count):
-            try:
-                start_time = time.time()
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(5)  # 5 second timeout
-                
-                # Try to connect to port 80 (HTTP) as a connectivity test
-                result = sock.connect_ex((target_ip, 80))
-                end_time = time.time()
-                
-                if result == 0 or result == 111:  # Connected or connection refused (but reachable)
-                    packets_received += 1
-                    response_time = (end_time - start_time) * 1000  # Convert to ms
-                    response_times.append(response_time)
-                
-                sock.close()
-                time.sleep(0.5)  # Small delay between attempts
-                
-            except Exception:
-                continue
+            success_this_round = False
+            best_time = None
+            
+            for port in test_ports:
+                try:
+                    start_time = time.time()
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    sock.settimeout(3)  # 3 second timeout
+                    
+                    result = sock.connect_ex((target_ip, port))
+                    end_time = time.time()
+                    
+                    if result == 0:  # Successfully connected
+                        response_time = (end_time - start_time) * 1000  # Convert to ms
+                        if best_time is None or response_time < best_time:
+                            best_time = response_time
+                        success_this_round = True
+                        
+                    sock.close()
+                    
+                    if success_this_round:
+                        break  # Found a working port, move to next iteration
+                        
+                except Exception:
+                    try:
+                        sock.close()
+                    except:
+                        pass
+                    continue
+            
+            if success_this_round and best_time is not None:
+                packets_received += 1
+                response_times.append(best_time)
+            
+            time.sleep(0.2)  # Small delay between attempts
         
         packet_loss = ((packets_sent - packets_received) / packets_sent) * 100
         avg_response_time = sum(response_times) / len(response_times) if response_times else None
@@ -499,8 +518,7 @@ def _socket_ping(target_ip: str, count: int) -> dict:
             "packets_sent": packets_sent,
             "packets_received": packets_received,
             "packet_loss": packet_loss,
-            "response_times": response_times,
-            "note": "Socket-based connectivity test (ping command not available)"
+            "response_times": response_times
         }
         
     except Exception as e:
