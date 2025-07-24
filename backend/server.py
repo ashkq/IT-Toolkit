@@ -899,19 +899,19 @@ async def scan_ports_endpoint(request: Request, target: str = Form(...), ports: 
 @api_router.get("/scan-history")
 async def get_scan_history():
     """Get file scan history"""
-    scans = await db.scan_results.find().sort("timestamp", -1).limit(50).to_list(length=50)
+    scans = await db.scan_results.find({}, {"_id": 0}).sort("timestamp", -1).limit(50).to_list(length=50)
     return scans
 
 @api_router.get("/security-history")
 async def get_security_history():
     """Get website security check history"""
-    reports = await db.security_reports.find().sort("timestamp", -1).limit(50).to_list(length=50)
+    reports = await db.security_reports.find({}, {"_id": 0}).sort("timestamp", -1).limit(50).to_list(length=50)
     return reports
 
 @api_router.get("/port-scan-history")
 async def get_port_scan_history():
     """Get port scan history"""
-    scans = await db.port_scans.find().sort("timestamp", -1).limit(50).to_list(length=50)
+    scans = await db.port_scans.find({}, {"_id": 0}).sort("timestamp", -1).limit(50).to_list(length=50)
     return scans
 
 # New Network Tools Endpoints
