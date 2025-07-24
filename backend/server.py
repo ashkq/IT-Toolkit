@@ -1016,7 +1016,7 @@ async def subnet_calculator_endpoint(request: Request, ip_address: str = Form(..
         if 'error' in result:
             raise HTTPException(status_code=400, detail=result['error'])
         
-        return SubnetCalculation(**result)
+        return result
     except HTTPException:
         raise
     except Exception as e:
