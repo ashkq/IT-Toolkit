@@ -339,6 +339,284 @@ class SecurityToolkitTester:
             self.log_test("Rate Limiting", False, error=str(e))
             return False
 
+    def test_ping_api(self):
+        """Test POST /api/ping endpoint"""
+        try:
+            # Test ping with Google DNS
+            data = {
+                'target': '8.8.8.8',
+                'count': 4
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/ping", 
+                                       data=data, timeout=30)
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                # Check required fields
+                required_fields = ['target', 'success', 'packets_sent', 'packets_received', 
+                                 'packet_loss', 'timestamp']
+                missing_fields = [field for field in required_fields if field not in result]
+                if missing_fields:
+                    self.log_test("Ping API", False, 
+                                error=f"Missing fields: {missing_fields}")
+                    return False
+                
+                # Verify data types and values
+                if not isinstance(result['success'], bool):
+                    self.log_test("Ping API", False, error="success should be boolean")
+                    return False
+                
+                if result['packets_sent'] != 4:
+                    self.log_test("Ping API", False, error="packets_sent should be 4")
+                    return False
+                
+                if not isinstance(result['packet_loss'], (int, float)) or not (0 <= result['packet_loss'] <= 100):
+                    self.log_test("Ping API", False, error="Invalid packet_loss value")
+                    return False
+                
+                self.log_test("Ping API", True, 
+                            f"Target: {result['target']}, Success: {result['success']}, "
+                            f"Sent: {result['packets_sent']}, Received: {result['packets_received']}, "
+                            f"Loss: {result['packet_loss']}%")
+                return True
+            else:
+                self.log_test("Ping API", False, error=f"HTTP {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Ping API", False, error=str(e))
+            return False
+
+    def test_traceroute_api(self):
+        """Test POST /api/traceroute endpoint"""
+        try:
+            # Test traceroute to Google
+            data = {
+                'target': 'google.com',
+                'max_hops': 15
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/traceroute", 
+                                       data=data, timeout=60)
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                # Check required fields
+                required_fields = ['target', 'hops', 'total_hops', 'success', 'timestamp']
+                missing_fields = [field for field in required_fields if field not in result]
+                if missing_fields:
+                    self.log_test("Traceroute API", False, 
+                                error=f"Missing fields: {missing_fields}")
+                    return False
+                
+                # Verify data types
+                if not isinstance(result['success'], bool):
+                    self.log_test("Traceroute API", False, error="success should be boolean")
+                    return False
+                
+                if not isinstance(result['hops'], list):
+                    self.log_test("Traceroute API", False, error="hops should be a list")
+                    return False
+                
+                if not isinstance(result['total_hops'], int):
+                    self.log_test("Traceroute API", False, error="total_hops should be integer")
+                    return False
+                
+                # Check if we got reasonable hop data
+                if result['success'] and result['total_hops'] == 0:
+                    self.log_test("Traceroute API", False, error="No hops found despite success")
+                    return False
+                
+                self.log_test("Traceroute API", True, 
+                            f"Target: {result['target']}, Success: {result['success']}, "
+                            f"Total hops: {result['total_hops']}")
+                return True
+            else:
+                self.log_test("Traceroute API", False, error=f"HTTP {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Traceroute API", False, error=str(e))
+            return False
+
+    def test_subnet_calculator_api(self):
+        """Test POST /api/subnet-calculator endpoint"""
+        try:
+            # Test subnet calculation
+            data = {
+                'ip_address': '192.168.1.1',
+                'subnet_mask': '24'
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/subnet-calculator", 
+                                       data=data, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                # Check required fields
+                required_fields = ['ip_address', 'subnet_mask', 'cidr_notation', 'network_address',
+                                 'broadcast_address', 'host_range', 'total_hosts', 'usable_hosts', 'subnet_class']
+                missing_fields = [field for field in required_fields if field not in result]
+                if missing_fields:
+                    self.log_test("Subnet Calculator API", False, 
+                                error=f"Missing fields: {missing_fields}")
+                    return False
+                
+                # Verify expected values for /24 network
+                if result['cidr_notation'] != '192.168.1.0/24':
+                    self.log_test("Subnet Calculator API", False, 
+                                error=f"Expected CIDR 192.168.1.0/24, got {result['cidr_notation']}")
+                    return False
+                
+                if result['total_hosts'] != 256:
+                    self.log_test("Subnet Calculator API", False, 
+                                error=f"Expected 256 total hosts, got {result['total_hosts']}")
+                    return False
+                
+                if result['usable_hosts'] != 254:
+                    self.log_test("Subnet Calculator API", False, 
+                                error=f"Expected 254 usable hosts, got {result['usable_hosts']}")
+                    return False
+                
+                self.log_test("Subnet Calculator API", True, 
+                            f"CIDR: {result['cidr_notation']}, Network: {result['network_address']}, "
+                            f"Broadcast: {result['broadcast_address']}, Usable hosts: {result['usable_hosts']}")
+                return True
+            else:
+                self.log_test("Subnet Calculator API", False, error=f"HTTP {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Subnet Calculator API", False, error=str(e))
+            return False
+
+    def test_password_generator_api(self):
+        """Test POST /api/generate-password endpoint"""
+        try:
+            # Test password generation with all character types
+            data = {
+                'length': 12,
+                'include_uppercase': True,
+                'include_lowercase': True,
+                'include_numbers': True,
+                'include_special': True
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/generate-password", 
+                                       data=data, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                # Check required fields
+                required_fields = ['password', 'strength', 'strength_score', 'length',
+                                 'has_uppercase', 'has_lowercase', 'has_numbers', 'has_special']
+                missing_fields = [field for field in required_fields if field not in result]
+                if missing_fields:
+                    self.log_test("Password Generator API", False, 
+                                error=f"Missing fields: {missing_fields}")
+                    return False
+                
+                # Verify password length
+                if len(result['password']) != 12:
+                    self.log_test("Password Generator API", False, 
+                                error=f"Expected password length 12, got {len(result['password'])}")
+                    return False
+                
+                # Verify character types are present
+                if not result['has_uppercase']:
+                    self.log_test("Password Generator API", False, 
+                                error="Password should contain uppercase letters")
+                    return False
+                
+                if not result['has_lowercase']:
+                    self.log_test("Password Generator API", False, 
+                                error="Password should contain lowercase letters")
+                    return False
+                
+                if not result['has_numbers']:
+                    self.log_test("Password Generator API", False, 
+                                error="Password should contain numbers")
+                    return False
+                
+                if not result['has_special']:
+                    self.log_test("Password Generator API", False, 
+                                error="Password should contain special characters")
+                    return False
+                
+                # Verify strength score is reasonable
+                if not isinstance(result['strength_score'], int) or not (0 <= result['strength_score'] <= 100):
+                    self.log_test("Password Generator API", False, 
+                                error="Invalid strength score")
+                    return False
+                
+                self.log_test("Password Generator API", True, 
+                            f"Length: {len(result['password'])}, Strength: {result['strength']} "
+                            f"(Score: {result['strength_score']}), Password: {result['password'][:4]}...")
+                return True
+            else:
+                self.log_test("Password Generator API", False, error=f"HTTP {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Password Generator API", False, error=str(e))
+            return False
+
+    def test_root_api_branding(self):
+        """Test GET /api/ endpoint for new branding"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check for new branding message
+                expected_message = "🦸‍♂️IT Hero 🛠 API"
+                if data.get('message') == expected_message:
+                    self.log_test("Root API Branding", True, 
+                                f"Correct branding: {data['message']}")
+                    return True
+                else:
+                    self.log_test("Root API Branding", False, 
+                                error=f"Expected '{expected_message}', got '{data.get('message')}'")
+                    return False
+            else:
+                self.log_test("Root API Branding", False, error=f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Root API Branding", False, error=str(e))
+            return False
+
+    def test_network_tools_history_endpoints(self):
+        """Test history endpoints for new network tools"""
+        history_endpoints = [
+            ('ping-history', 'Ping History'),
+            ('traceroute-history', 'Traceroute History')
+        ]
+        
+        all_passed = True
+        for endpoint, name in history_endpoints:
+            try:
+                response = self.session.get(f"{BACKEND_URL}/{endpoint}", timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    if isinstance(data, list):
+                        self.log_test(f"{name} API", True, f"Retrieved {len(data)} records")
+                    else:
+                        self.log_test(f"{name} API", False, error="Response should be a list")
+                        all_passed = False
+                else:
+                    self.log_test(f"{name} API", False, error=f"HTTP {response.status_code}")
+                    all_passed = False
+            except Exception as e:
+                self.log_test(f"{name} API", False, error=str(e))
+                all_passed = False
+        
+        return all_passed
+
     def test_error_handling(self):
         """Test error handling with invalid inputs"""
         error_tests = [
@@ -358,6 +636,18 @@ class SecurityToolkitTester:
                 'name': 'Missing file for scan',
                 'endpoint': 'scan-file',
                 'data': {},
+                'method': 'POST'
+            },
+            {
+                'name': 'Invalid ping count',
+                'endpoint': 'ping',
+                'data': {'target': '8.8.8.8', 'count': 15},  # Over limit of 10
+                'method': 'POST'
+            },
+            {
+                'name': 'Invalid subnet mask',
+                'endpoint': 'subnet-calculator',
+                'data': {'ip_address': '192.168.1.1', 'subnet_mask': '35'},  # Invalid CIDR
                 'method': 'POST'
             }
         ]
