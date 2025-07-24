@@ -404,6 +404,303 @@ def scan_ports(target: str, ports: List[int]) -> dict:
     except Exception as e:
         return {"error": f"Port scan failed: {str(e)}"}
 
+def ping_host(target: str, count: int = 4) -> dict:
+    """Ping a host and return response times"""
+    try:
+        start_time = time.time()
+        
+        # Resolve hostname if needed
+        try:
+            target_ip = socket.gethostbyname(target)
+        except socket.gaierror:
+            return {"error": f"Could not resolve hostname: {target}"}
+        
+        import subprocess
+        import platform
+        
+        # Determine ping command based on OS
+        system = platform.system().lower()
+        if system == "windows":
+            cmd = ["ping", "-n", str(count), target_ip]
+        else:
+            cmd = ["ping", "-c", str(count), target_ip]
+        
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            
+            packets_sent = count
+            packets_received = 0
+            response_times = []
+            
+            # Parse ping output
+            lines = result.stdout.split('\n')
+            for line in lines:
+                if 'time=' in line:
+                    packets_received += 1
+                    # Extract time from line (works for both Windows and Unix)
+                    time_match = re.search(r'time[<=]\s*(\d+\.?\d*)', line)
+                    if time_match:
+                        response_times.append(float(time_match.group(1)))
+            
+            packet_loss = ((packets_sent - packets_received) / packets_sent) * 100
+            avg_response_time = sum(response_times) / len(response_times) if response_times else None
+            
+            return {
+                "success": packets_received > 0,
+                "response_time": avg_response_time,
+                "packets_sent": packets_sent,
+                "packets_received": packets_received,
+                "packet_loss": packet_loss,
+                "response_times": response_times
+            }
+            
+        except subprocess.TimeoutExpired:
+            return {"error": "Ping timeout"}
+        except Exception as e:
+            return {"error": f"Ping failed: {str(e)}"}
+            
+    except Exception as e:
+        return {"error": f"Ping operation failed: {str(e)}"}
+
+def traceroute_host(target: str, max_hops: int = 30) -> dict:
+    """Perform traceroute to target host"""
+    try:
+        # Resolve hostname if needed
+        try:
+            target_ip = socket.gethostbyname(target)
+        except socket.gaierror:
+            return {"error": f"Could not resolve hostname: {target}"}
+        
+        import subprocess
+        import platform
+        
+        system = platform.system().lower()
+        if system == "windows":
+            cmd = ["tracert", "-h", str(max_hops), target_ip]
+        else:
+            cmd = ["traceroute", "-m", str(max_hops), target_ip]
+        
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            
+            hops = []
+            lines = result.stdout.split('\n')
+            hop_num = 0
+            
+            for line in lines:
+                if not line.strip():
+                    continue
+                    
+                # Parse hop information (basic parsing)
+                if system == "windows":
+                    # Windows tracert format
+                    if re.match(r'\s*\d+', line):
+                        hop_num += 1
+                        parts = line.strip().split()
+                        if len(parts) >= 4:
+                            # Extract IP and timing info
+                            ip_match = re.search(r'(\d+\.\d+\.\d+\.\d+)', line)
+                            time_matches = re.findall(r'(\d+)\s*ms', line)
+                            
+                            hop_info = {
+                                "hop": hop_num,
+                                "ip": ip_match.group(1) if ip_match else "*",
+                                "hostname": None,
+                                "response_times": [int(t) for t in time_matches[:3]],
+                                "avg_time": sum([int(t) for t in time_matches[:3]]) / len(time_matches[:3]) if time_matches else None
+                            }
+                            hops.append(hop_info)
+                else:
+                    # Unix traceroute format
+                    if re.match(r'\s*\d+', line):
+                        hop_num += 1
+                        parts = line.strip().split()
+                        if len(parts) >= 3:
+                            hop_info = {
+                                "hop": hop_num,
+                                "ip": parts[1] if '(' in parts[1] else parts[1],
+                                "hostname": parts[1].split('(')[0] if '(' in parts[1] else None,
+                                "response_times": [],
+                                "avg_time": None
+                            }
+                            
+                            # Extract timing information
+                            time_matches = re.findall(r'(\d+\.?\d*)\s*ms', line)
+                            if time_matches:
+                                hop_info["response_times"] = [float(t) for t in time_matches]
+                                hop_info["avg_time"] = sum([float(t) for t in time_matches]) / len(time_matches)
+                            
+                            hops.append(hop_info)
+            
+            return {
+                "success": len(hops) > 0,
+                "hops": hops,
+                "total_hops": len(hops),
+                "target_reached": any(hop.get("ip") == target_ip for hop in hops)
+            }
+            
+        except subprocess.TimeoutExpired:
+            return {"error": "Traceroute timeout"}
+        except Exception as e:
+            return {"error": f"Traceroute failed: {str(e)}"}
+            
+    except Exception as e:
+        return {"error": f"Traceroute operation failed: {str(e)}"}
+
+def calculate_subnet(ip_address: str, subnet_mask: str) -> dict:
+    """Calculate subnet information"""
+    try:
+        # Handle CIDR notation
+        if '/' in ip_address:
+            network = ipaddress.IPv4Network(ip_address, strict=False)
+            ip = network.network_address
+            prefix_length = network.prefixlen
+        else:
+            ip = ipaddress.IPv4Address(ip_address)
+            
+            # Convert subnet mask to prefix length
+            if '.' in subnet_mask:
+                mask = ipaddress.IPv4Address(subnet_mask)
+                prefix_length = ipaddress.IPv4Network(f"0.0.0.0/{mask}").prefixlen
+            else:
+                prefix_length = int(subnet_mask)
+            
+            network = ipaddress.IPv4Network(f"{ip}/{prefix_length}", strict=False)
+        
+        # Calculate subnet information
+        network_address = str(network.network_address)
+        broadcast_address = str(network.broadcast_address)
+        total_hosts = network.num_addresses
+        usable_hosts = max(0, total_hosts - 2)  # Subtract network and broadcast
+        
+        # Determine subnet class
+        first_octet = int(str(network.network_address).split('.')[0])
+        if 1 <= first_octet <= 126:
+            subnet_class = "A"
+        elif 128 <= first_octet <= 191:
+            subnet_class = "B"
+        elif 192 <= first_octet <= 223:
+            subnet_class = "C"
+        else:
+            subnet_class = "Other"
+        
+        # Host range
+        if usable_hosts > 0:
+            host_range = {
+                "start": str(network.network_address + 1),
+                "end": str(network.broadcast_address - 1)
+            }
+        else:
+            host_range = {"start": "N/A", "end": "N/A"}
+        
+        return {
+            "success": True,
+            "ip_address": str(ip),
+            "subnet_mask": str(network.netmask),
+            "cidr_notation": str(network),
+            "network_address": network_address,
+            "broadcast_address": broadcast_address,
+            "host_range": host_range,
+            "total_hosts": total_hosts,
+            "usable_hosts": usable_hosts,
+            "subnet_class": subnet_class
+        }
+        
+    except Exception as e:
+        return {"error": f"Subnet calculation failed: {str(e)}"}
+
+def generate_password(length: int = 12, include_uppercase: bool = True, 
+                     include_lowercase: bool = True, include_numbers: bool = True, 
+                     include_special: bool = True) -> dict:
+    """Generate a secure password with strength analysis"""
+    try:
+        if length < 4:
+            return {"error": "Password length must be at least 4 characters"}
+        
+        # Build character set
+        chars = ""
+        if include_lowercase:
+            chars += string.ascii_lowercase
+        if include_uppercase:
+            chars += string.ascii_uppercase
+        if include_numbers:
+            chars += string.digits
+        if include_special:
+            chars += "!@#$%^&*()_+-=[]{}|;:,.<>?"
+        
+        if not chars:
+            return {"error": "At least one character type must be selected"}
+        
+        # Generate password ensuring at least one character from each selected type
+        password = ""
+        
+        # Add at least one character from each selected type
+        if include_lowercase and len(password) < length:
+            password += secrets.choice(string.ascii_lowercase)
+        if include_uppercase and len(password) < length:
+            password += secrets.choice(string.ascii_uppercase)
+        if include_numbers and len(password) < length:
+            password += secrets.choice(string.digits)
+        if include_special and len(password) < length:
+            password += secrets.choice("!@#$%^&*()_+-=[]{}|;:,.<>?")
+        
+        # Fill remaining length with random characters
+        while len(password) < length:
+            password += secrets.choice(chars)
+        
+        # Shuffle the password
+        password_list = list(password)
+        random.shuffle(password_list)
+        password = ''.join(password_list)
+        
+        # Calculate strength
+        strength_score = 0
+        has_upper = any(c.isupper() for c in password)
+        has_lower = any(c.islower() for c in password)
+        has_digit = any(c.isdigit() for c in password)
+        has_special = any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in password)
+        
+        # Scoring criteria
+        if len(password) >= 8:
+            strength_score += 20
+        if len(password) >= 12:
+            strength_score += 10
+        if has_upper:
+            strength_score += 15
+        if has_lower:
+            strength_score += 15
+        if has_digit:
+            strength_score += 15
+        if has_special:
+            strength_score += 25
+        
+        # Determine strength level
+        if strength_score >= 80:
+            strength = "Very Strong"
+        elif strength_score >= 60:
+            strength = "Strong"
+        elif strength_score >= 40:
+            strength = "Medium"
+        elif strength_score >= 20:
+            strength = "Weak"
+        else:
+            strength = "Very Weak"
+        
+        return {
+            "success": True,
+            "password": password,
+            "strength": strength,
+            "strength_score": strength_score,
+            "length": len(password),
+            "has_uppercase": has_upper,
+            "has_lowercase": has_lower,
+            "has_numbers": has_digit,
+            "has_special": has_special
+        }
+        
+    except Exception as e:
+        return {"error": f"Password generation failed: {str(e)}"}
+
 # API Routes
 @api_router.get("/system-info", response_model=SystemInfo)
 async def get_system_info_endpoint():
