@@ -676,8 +676,8 @@ const NetworkUtilitiesTab = ({ systemInfo }) => {
         </div>
       )}
 
-      {/* Network Tools Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+      {/* Network Tools Grid - Reorganized */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* WiFi Speed Test */}
         <div className="bg-gray-700 rounded-lg p-4">
           <h4 className="font-bold text-center mb-3 text-blue-400">📶 WiFi Speed Test</h4>
@@ -692,16 +692,11 @@ const NetworkUtilitiesTab = ({ systemInfo }) => {
         <PasswordGenerator />
       </div>
 
-      {/* Advanced Network Tools */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Ping Tester */}
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold mb-4 text-green-400">🏓 Advanced Ping Tester</h3>
+      {/* Connection Testing Tools */}
+      <div className="bg-gray-800 rounded-lg p-6">
+        <h3 className="text-xl font-bold mb-4 text-green-400">🏓 Connection Testing</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <PingTesterFull />
-        </div>
-
-        {/* Traceroute */}
-        <div className="bg-gray-800 rounded-lg p-6">
           <TracerouteVisualizer />
         </div>
       </div>
