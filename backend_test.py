@@ -687,14 +687,20 @@ class SecurityToolkitTester:
         print(f"Testing backend at: {BACKEND_URL}")
         print()
         
-        # Run tests in order
+        # Run tests in order - prioritizing new network tools
         tests = [
             self.test_health_check,
+            self.test_root_api_branding,
             self.test_system_info_api,
+            self.test_ping_api,
+            self.test_traceroute_api,
+            self.test_subnet_calculator_api,
+            self.test_password_generator_api,
             self.test_file_malware_scanner,
             self.test_website_security_checker,
             self.test_port_scanner,
             self.test_history_endpoints,
+            self.test_network_tools_history_endpoints,
             self.test_rate_limiting,
             self.test_error_handling
         ]
