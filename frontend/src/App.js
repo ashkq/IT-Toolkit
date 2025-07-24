@@ -82,7 +82,6 @@ const Dashboard = () => {
             />
           )}
           {activeTab === 'network-utilities' && <NetworkUtilitiesTab systemInfo={systemInfo} />}
-          {activeTab === 'network-analyzer' && <NetworkAnalyzerTab />}
           {activeTab === 'malware-scanner' && <MalwareScannerTab />}
           {activeTab === 'website-checker' && <WebsiteCheckerTab />}
           {activeTab === 'port-scanner' && <PortScannerTab />}
