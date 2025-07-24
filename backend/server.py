@@ -103,6 +103,47 @@ class PortScanResult(BaseModel):
     scan_duration: float
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
+class PingResult(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    target: str
+    success: bool
+    response_time: Optional[float]
+    packets_sent: int
+    packets_received: int
+    packet_loss: float
+    error_message: Optional[str]
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+class TracerouteResult(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    target: str
+    hops: List[Dict[str, Any]]
+    total_hops: int
+    success: bool
+    error_message: Optional[str]
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+class SubnetCalculation(BaseModel):
+    ip_address: str
+    subnet_mask: str
+    cidr_notation: str
+    network_address: str
+    broadcast_address: str
+    host_range: Dict[str, str]
+    total_hosts: int
+    usable_hosts: int
+    subnet_class: str
+
+class PasswordGeneration(BaseModel):
+    password: str
+    strength: str
+    strength_score: int
+    length: int
+    has_uppercase: bool
+    has_lowercase: bool
+    has_numbers: bool
+    has_special: bool
+
 # Helper functions
 def get_system_info():
     """Collect comprehensive system information"""
