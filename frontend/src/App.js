@@ -143,8 +143,12 @@ const QuickPingTester = () => {
       </button>
       {pingResult && !pingResult.error && (
         <div className="text-xs">
-          <div className="text-green-400">{pingResult.response_time?.toFixed(1)}ms</div>
-          <div className="text-gray-400">{pingResult.packet_loss}% loss</div>
+          <div className="text-green-400">
+            {pingResult.response_time ? `${pingResult.response_time.toFixed(1)}ms` : 'N/A'}
+          </div>
+          <div className="text-gray-400">
+            {pingResult.packet_loss ? `${pingResult.packet_loss.toFixed(1)}% loss` : '0% loss'}
+          </div>
         </div>
       )}
       {pingResult?.error && (
