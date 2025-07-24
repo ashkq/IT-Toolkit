@@ -440,7 +440,7 @@ const TracerouteVisualizer = () => {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6">
+    <div className="space-y-4">
       <h3 className="text-xl font-bold mb-4 text-purple-400">🗺️ Traceroute Visualizer</h3>
       
       <div className="space-y-4">
