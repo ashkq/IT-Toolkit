@@ -577,7 +577,7 @@ const NetworkSpeedDashboard = () => {
           disabled={isRunning}
           className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-8 py-3 rounded-lg text-lg font-bold transition-colors"
         >
-          {isRunning ? '⏳ Testing...' : '🚀 Start Speed Test'}
+          {isRunning ? '⏳ Testing...' : '⚡ Start'}
         </button>
       </div>
 
