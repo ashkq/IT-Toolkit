@@ -13,7 +13,7 @@ from datetime import datetime
 import hashlib
 
 # Backend URL from environment
-BACKEND_URL = "https://b7dd373c-a6ad-4506-8051-8d7f54dee68a.preview.emergentagent.com/api"
+BACKEND_URL = "https://164589e4-a16c-4890-beb6-62a9309810c9.preview.emergentagent.com/api"
 
 class SecurityToolkitTester:
     def __init__(self):
