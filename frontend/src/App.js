@@ -1230,6 +1230,16 @@ const PortScannerTab = () => {
     }
   };
 
+  const getPortTypeName = (portValue) => {
+    switch (portValue) {
+      case 'common': return 'Common Ports';
+      case '80,443': return 'Web Ports';
+      case '21,22,23': return 'Remote Access';
+      case '25,110,143,993,995': return 'Email Ports';
+      default: return 'Custom Ports';
+    }
+  };
+
   const scanPorts = async () => {
     if (!target) return;
 
@@ -1241,6 +1251,7 @@ const PortScannerTab = () => {
       const formData = new FormData();
       formData.append('target', target);
       formData.append('ports', ports);
+      formData.append('port_type', getPortTypeName(ports)); // Add port type info
 
       const response = await axios.post(`${API}/scan-ports`, formData);
       setResult(response.data);
