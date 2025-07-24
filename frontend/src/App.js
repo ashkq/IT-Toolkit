@@ -299,7 +299,7 @@ const NetworkAnalyzerTab = () => {
       
       {/* Speed Test Visualization */}
       <div className="bg-gray-800 rounded-lg p-4 md:p-6">
-        <h3 className="text-lg md:text-xl font-bold mb-4 text-blue-400">🚀 Network Speed Analyzer</h3>
+        <h3 className="text-lg md:text-xl font-bold mb-4 text-blue-400">📶 WiFi Speed Test</h3>
         <NetworkSpeedDashboard />
       </div>
     </div>
