@@ -47,7 +47,7 @@ db = client[os.environ['DB_NAME']]
 limiter = Limiter(key_func=get_remote_address)
 
 # Create the main app
-app = FastAPI(title="IT Security & Diagnostic Toolkit", description="Complete security and diagnostic toolkit")
+app = FastAPI(title="🦸‍♂️IT Hero 🛠", description="IT Security & Diagnostic Toolkit - Your Complete IT Superhero Solution")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
