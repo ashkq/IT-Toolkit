@@ -170,10 +170,16 @@ it-hero-toolkit/
 
 ## 📝 Important Notes
 
-### System Information Accuracy
-- **Web Version:** Shows server system information (hosting environment)
-- **Local Version:** Shows actual local machine information when run locally
-- The application is designed to run locally for accurate system diagnostics
+### System Information Accuracy ⚠️
+**IMPORTANT:** The system information displayed depends on where the application is running:
+
+- **When run locally** (following the setup instructions above): Shows YOUR actual computer's information (CPU, memory, processes, etc.)
+- **When run on a web server/cloud**: Shows the server's information, not your local machine
+
+**To see YOUR computer's real information:**
+1. Follow the installation steps above to run IT Hero locally
+2. The application will then display your actual system stats, processes, and network information
+3. This is the intended way to use IT Hero for personal system diagnostics
 
 ### Security Features
 - All scanning functions work without API keys but have limited capabilities
