@@ -150,6 +150,12 @@ const SystemInfoTab = ({ systemInfo, loading, error, onRefresh }) => {
           </div>
         </div>
 
+        {/* Network Tools Section */}
+        <div className="bg-gray-800 rounded-lg p-6 md:col-span-2 lg:col-span-3">
+          <h3 className="text-xl font-bold mb-4 text-cyan-400">🛠️ Network Utilities</h3>
+          <NetworkToolsSection />
+        </div>
+
         {/* Memory Usage */}
         <div className="bg-gray-800 rounded-lg p-6">
           <h3 className="text-xl font-bold mb-4 text-purple-400">💾 Memory</h3>
