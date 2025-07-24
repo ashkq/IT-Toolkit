@@ -350,17 +350,17 @@ const PasswordGenerator = () => {
 const NetworkAnalyzerTab = () => {
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">🔍 Network Analyzer Dashboard</h2>
+      <h2 className="text-xl md:text-2xl font-bold">🔍 Network Analyzer Dashboard</h2>
       
       {/* Main Diagnostic Tools */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <PingTesterFull />
         <TracerouteVisualizer />
       </div>
       
       {/* Speed Test Visualization */}
-      <div className="bg-gray-800 rounded-lg p-6">
-        <h3 className="text-xl font-bold mb-4 text-blue-400">🚀 Network Speed Analyzer</h3>
+      <div className="bg-gray-800 rounded-lg p-4 md:p-6">
+        <h3 className="text-lg md:text-xl font-bold mb-4 text-blue-400">🚀 Network Speed Analyzer</h3>
         <NetworkSpeedDashboard />
       </div>
     </div>
