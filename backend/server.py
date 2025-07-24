@@ -598,68 +598,6 @@ def traceroute_host(target: str, max_hops: int = 30) -> dict:
     except Exception as e:
         return {"error": f"Traceroute operation failed: {str(e)}"}
 
-def calculate_subnet(ip_address: str, subnet_mask: str) -> dict:
-    """Calculate subnet information"""
-    try:
-        # Handle CIDR notation
-        if '/' in ip_address:
-            network = ipaddress.IPv4Network(ip_address, strict=False)
-            ip = network.network_address
-            prefix_length = network.prefixlen
-        else:
-            ip = ipaddress.IPv4Address(ip_address)
-            
-            # Convert subnet mask to prefix length
-            if '.' in subnet_mask:
-                mask = ipaddress.IPv4Address(subnet_mask)
-                prefix_length = ipaddress.IPv4Network(f"0.0.0.0/{mask}").prefixlen
-            else:
-                prefix_length = int(subnet_mask)
-            
-            network = ipaddress.IPv4Network(f"{ip}/{prefix_length}", strict=False)
-        
-        # Calculate subnet information
-        network_address = str(network.network_address)
-        broadcast_address = str(network.broadcast_address)
-        total_hosts = network.num_addresses
-        usable_hosts = max(0, total_hosts - 2)  # Subtract network and broadcast
-        
-        # Determine subnet class
-        first_octet = int(str(network.network_address).split('.')[0])
-        if 1 <= first_octet <= 126:
-            subnet_class = "A"
-        elif 128 <= first_octet <= 191:
-            subnet_class = "B"
-        elif 192 <= first_octet <= 223:
-            subnet_class = "C"
-        else:
-            subnet_class = "Other"
-        
-        # Host range
-        if usable_hosts > 0:
-            host_range = {
-                "start": str(network.network_address + 1),
-                "end": str(network.broadcast_address - 1)
-            }
-        else:
-            host_range = {"start": "N/A", "end": "N/A"}
-        
-        return {
-            "success": True,
-            "ip_address": str(ip),
-            "subnet_mask": str(network.netmask),
-            "cidr_notation": str(network),
-            "network_address": network_address,
-            "broadcast_address": broadcast_address,
-            "host_range": host_range,
-            "total_hosts": total_hosts,
-            "usable_hosts": usable_hosts,
-            "subnet_class": subnet_class
-        }
-        
-    except Exception as e:
-        return {"error": f"Subnet calculation failed: {str(e)}"}
-
 def generate_password(length: int = 12, include_uppercase: bool = True, 
                      include_lowercase: bool = True, include_numbers: bool = True, 
                      include_special: bool = True) -> dict:
