@@ -896,7 +896,8 @@ async def ping_endpoint(request: Request, target: str = Form(...), count: int = 
             response_time=ping_data.get('response_time'),
             packets_sent=ping_data['packets_sent'],
             packets_received=ping_data['packets_received'],
-            packet_loss=ping_data['packet_loss']
+            packet_loss=ping_data['packet_loss'],
+            error_message=ping_data.get('error_message')
         )
         
         # Store in database
