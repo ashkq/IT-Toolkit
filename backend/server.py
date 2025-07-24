@@ -1033,13 +1033,13 @@ async def generate_password_endpoint(
 @api_router.get("/ping-history")
 async def get_ping_history():
     """Get ping test history"""
-    results = await db.ping_results.find().sort("timestamp", -1).limit(50).to_list(length=50)
+    results = await db.ping_results.find({}, {"_id": 0}).sort("timestamp", -1).limit(50).to_list(length=50)
     return results
 
 @api_router.get("/traceroute-history")
 async def get_traceroute_history():
     """Get traceroute history"""
-    results = await db.traceroute_results.find().sort("timestamp", -1).limit(50).to_list(length=50)
+    results = await db.traceroute_results.find({}, {"_id": 0}).sort("timestamp", -1).limit(50).to_list(length=50)
     return results
 
 # Health check
