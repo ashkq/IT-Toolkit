@@ -52,19 +52,19 @@ const Dashboard = () => {
         </header>
 
         {/* Tab Navigation */}
-        <div className="flex flex-wrap justify-center mb-8 space-x-2">
+        <div className="flex flex-wrap justify-center mb-8 space-x-2 px-4">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`flex items-center space-x-2 px-4 md:px-6 py-2 md:py-3 rounded-lg font-medium transition-all mb-2 ${
                 activeTab === tab.id
                   ? 'bg-blue-600 text-white shadow-lg'
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
-              <span className="text-xl">{tab.icon}</span>
-              <span>{tab.name}</span>
+              <span className="text-lg md:text-xl">{tab.icon}</span>
+              <span className="text-sm md:text-base">{tab.name}</span>
             </button>
           ))}
         </div>
