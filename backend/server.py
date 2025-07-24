@@ -931,7 +931,8 @@ async def traceroute_endpoint(request: Request, target: str = Form(...), max_hop
             target=target,
             hops=traceroute_data['hops'],
             total_hops=traceroute_data['total_hops'],
-            success=traceroute_data['success']
+            success=traceroute_data['success'],
+            error_message=traceroute_data.get('error_message')
         )
         
         # Store in database
