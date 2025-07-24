@@ -36,3 +36,25 @@
         transform: rotate(360deg);
     }
 }
+
+/* Dynamic cool-color gradient animation */
+.animated-gradient {
+    background: linear-gradient(-45deg, #667eea, #764ba2, #6fa8dc, #4a90e2, #5c7cfa, #72afd3);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 6s ease infinite;
+}
+
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
