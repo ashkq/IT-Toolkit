@@ -123,17 +123,6 @@ class TracerouteResult(BaseModel):
     error_message: Optional[str]
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
-class SubnetCalculation(BaseModel):
-    ip_address: str
-    subnet_mask: str
-    cidr_notation: str
-    network_address: str
-    broadcast_address: str
-    host_range: Dict[str, str]
-    total_hosts: int
-    usable_hosts: int
-    subnet_class: str
-
 class PasswordGeneration(BaseModel):
     password: str
     strength: str
