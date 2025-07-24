@@ -870,6 +870,132 @@ async def get_port_scan_history():
     scans = await db.port_scans.find().sort("timestamp", -1).limit(50).to_list(length=50)
     return scans
 
+# New Network Tools Endpoints
+@api_router.post("/ping")
+@limiter.limit("10/minute")
+async def ping_endpoint(request: Request, target: str = Form(...), count: int = Form(4)):
+    """Ping a host and return response times"""
+    try:
+        if count > 10:
+            raise HTTPException(status_code=400, detail="Maximum 10 pings allowed")
+        
+        # Run ping in thread pool
+        def _ping():
+            return ping_host(target, count)
+        
+        loop = asyncio.get_event_loop()
+        ping_data = await loop.run_in_executor(executor, _ping)
+        
+        if 'error' in ping_data:
+            raise HTTPException(status_code=400, detail=ping_data['error'])
+        
+        # Create ping result
+        ping_result = PingResult(
+            target=target,
+            success=ping_data['success'],
+            response_time=ping_data.get('response_time'),
+            packets_sent=ping_data['packets_sent'],
+            packets_received=ping_data['packets_received'],
+            packet_loss=ping_data['packet_loss']
+        )
+        
+        # Store in database
+        await db.ping_results.insert_one(ping_result.dict())
+        
+        return ping_result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/traceroute")
+@limiter.limit("5/minute")
+async def traceroute_endpoint(request: Request, target: str = Form(...), max_hops: int = Form(30)):
+    """Perform traceroute to target host"""
+    try:
+        if max_hops > 50:
+            raise HTTPException(status_code=400, detail="Maximum 50 hops allowed")
+        
+        # Run traceroute in thread pool
+        def _traceroute():
+            return traceroute_host(target, max_hops)
+        
+        loop = asyncio.get_event_loop()
+        traceroute_data = await loop.run_in_executor(executor, _traceroute)
+        
+        if 'error' in traceroute_data:
+            raise HTTPException(status_code=400, detail=traceroute_data['error'])
+        
+        # Create traceroute result
+        traceroute_result = TracerouteResult(
+            target=target,
+            hops=traceroute_data['hops'],
+            total_hops=traceroute_data['total_hops'],
+            success=traceroute_data['success']
+        )
+        
+        # Store in database
+        await db.traceroute_results.insert_one(traceroute_result.dict())
+        
+        return traceroute_result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/subnet-calculator")
+async def subnet_calculator_endpoint(request: Request, ip_address: str = Form(...), subnet_mask: str = Form(...)):
+    """Calculate subnet information"""
+    try:
+        result = calculate_subnet(ip_address, subnet_mask)
+        
+        if 'error' in result:
+            raise HTTPException(status_code=400, detail=result['error'])
+        
+        return SubnetCalculation(**result)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/generate-password")
+async def generate_password_endpoint(
+    request: Request,
+    length: int = Form(12),
+    include_uppercase: bool = Form(True),
+    include_lowercase: bool = Form(True),
+    include_numbers: bool = Form(True),
+    include_special: bool = Form(True)
+):
+    """Generate a secure password"""
+    try:
+        if length > 128:
+            raise HTTPException(status_code=400, detail="Maximum password length is 128 characters")
+        
+        result = generate_password(length, include_uppercase, include_lowercase, include_numbers, include_special)
+        
+        if 'error' in result:
+            raise HTTPException(status_code=400, detail=result['error'])
+        
+        return PasswordGeneration(**result)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# History endpoints for new tools
+@api_router.get("/ping-history")
+async def get_ping_history():
+    """Get ping test history"""
+    results = await db.ping_results.find().sort("timestamp", -1).limit(50).to_list(length=50)
+    return results
+
+@api_router.get("/traceroute-history")
+async def get_traceroute_history():
+    """Get traceroute history"""
+    results = await db.traceroute_results.find().sort("timestamp", -1).limit(50).to_list(length=50)
+    return results
+
 # Health check
 @api_router.get("/")
 async def root():
