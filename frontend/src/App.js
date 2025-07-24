@@ -702,7 +702,6 @@ const NetworkUtilitiesTab = ({ systemInfo }) => {
 
         {/* Traceroute */}
         <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold mb-4 text-purple-400">🗺️ Traceroute Visualizer</h3>
           <TracerouteVisualizer />
         </div>
       </div>
