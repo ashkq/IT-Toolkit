@@ -796,7 +796,7 @@ const SystemInfoTab = ({ systemInfo, loading, error, onRefresh }) => {
         </div>
 
         {/* Top Processes */}
-        <div className="bg-gray-800 rounded-lg p-6 md:col-span-2">
+        <div className="bg-gray-800 rounded-lg p-6 md:col-span-3">
           <h3 className="text-xl font-bold mb-4 text-red-400">⚡ Top CPU Processes</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
