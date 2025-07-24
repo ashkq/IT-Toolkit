@@ -15,7 +15,6 @@ const Dashboard = () => {
   const tabs = [
     { id: 'system-info', name: 'System Info', icon: '🖥️' },
     { id: 'network-utilities', name: 'Network Utilities', icon: '🌐' },
-    { id: 'network-analyzer', name: 'Network Analyzer', icon: '🔍' },
     { id: 'malware-scanner', name: 'Malware Scanner', icon: '🛡️' },
     { id: 'website-checker', name: 'Website Security', icon: '🔒' },
     { id: 'port-scanner', name: 'Port Scanner', icon: '🔓' },
