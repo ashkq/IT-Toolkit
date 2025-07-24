@@ -47,7 +47,7 @@ const Dashboard = () => {
         <header className="text-center mb-6 md:mb-8">
           <h1 className="text-3xl md:text-5xl font-bold mb-2">
             <span className="text-4xl md:text-6xl">🦸‍♂️</span>
-            <span className="animated-gradient bg-clip-text text-transparent mx-2">IT Hero</span>
+            <span className="animated-gradient mx-2">IT Hero</span>
             <span className="text-4xl md:text-6xl">🛠</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-400 mb-2">IT Security & Diagnostic Toolkit</p>
