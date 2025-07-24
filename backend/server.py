@@ -101,6 +101,7 @@ class PortScanResult(BaseModel):
     open_ports: List[Dict[str, Any]]
     closed_ports: List[int]
     scan_duration: float
+    port_type: Optional[str] = "Common Ports"
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 class PingResult(BaseModel):
