@@ -245,7 +245,7 @@ const PasswordGenerator = () => {
 
   return (
     <div className="bg-gray-700 rounded-lg p-4">
-      <h4 className="font-bold mb-2 text-orange-400">🔐 Password Gen</h4>
+      <h4 className="font-bold mb-2 text-orange-400">🔐 Password Generator</h4>
       <div className="space-y-2">
         <div className="flex items-center space-x-1">
           <span className="text-xs">Length:</span>
