@@ -415,17 +415,18 @@ def ping_host(target: str, count: int = 4) -> dict:
         except socket.gaierror:
             return {"error": f"Could not resolve hostname: {target}"}
         
-        import subprocess
-        import platform
-        
-        # Determine ping command based on OS
-        system = platform.system().lower()
-        if system == "windows":
-            cmd = ["ping", "-n", str(count), target_ip]
-        else:
-            cmd = ["ping", "-c", str(count), target_ip]
-        
+        # Try system ping first
         try:
+            import subprocess
+            import platform
+            
+            # Determine ping command based on OS
+            system = platform.system().lower()
+            if system == "windows":
+                cmd = ["ping", "-n", str(count), target_ip]
+            else:
+                cmd = ["ping", "-c", str(count), target_ip]
+            
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             
             packets_sent = count
@@ -454,13 +455,56 @@ def ping_host(target: str, count: int = 4) -> dict:
                 "response_times": response_times
             }
             
-        except subprocess.TimeoutExpired:
-            return {"error": "Ping timeout"}
-        except Exception as e:
-            return {"error": f"Ping failed: {str(e)}"}
+        except (subprocess.TimeoutExpired, FileNotFoundError, PermissionError):
+            # Fall back to socket-based connectivity test
+            return _socket_ping(target_ip, count)
             
     except Exception as e:
         return {"error": f"Ping operation failed: {str(e)}"}
+
+def _socket_ping(target_ip: str, count: int) -> dict:
+    """Socket-based connectivity test as ping alternative"""
+    try:
+        packets_sent = count
+        packets_received = 0
+        response_times = []
+        
+        for i in range(count):
+            try:
+                start_time = time.time()
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(5)  # 5 second timeout
+                
+                # Try to connect to port 80 (HTTP) as a connectivity test
+                result = sock.connect_ex((target_ip, 80))
+                end_time = time.time()
+                
+                if result == 0 or result == 111:  # Connected or connection refused (but reachable)
+                    packets_received += 1
+                    response_time = (end_time - start_time) * 1000  # Convert to ms
+                    response_times.append(response_time)
+                
+                sock.close()
+                time.sleep(0.5)  # Small delay between attempts
+                
+            except Exception:
+                continue
+        
+        packet_loss = ((packets_sent - packets_received) / packets_sent) * 100
+        avg_response_time = sum(response_times) / len(response_times) if response_times else None
+        
+        return {
+            "success": packets_received > 0,
+            "response_time": avg_response_time,
+            "packets_sent": packets_sent,
+            "packets_received": packets_received,
+            "packet_loss": packet_loss,
+            "response_times": response_times,
+            "note": "Socket-based connectivity test (ping command not available)"
+        }
+        
+    except Exception as e:
+        return {"error": f"Socket ping failed: {str(e)}"}
 
 def traceroute_host(target: str, max_hops: int = 30) -> dict:
     """Perform traceroute to target host"""
