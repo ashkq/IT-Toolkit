@@ -324,7 +324,6 @@ const PingTesterFull = () => {
 
   return (
     <div className="bg-gray-800 rounded-lg p-6">
-      <h3 className="text-xl font-bold mb-4 text-green-400">📡 Ping Test</h3>
       
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
