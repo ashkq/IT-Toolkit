@@ -1308,7 +1308,15 @@ const PortScannerTab = () => {
 
       const response = await axios.post(`${API}/scan-ports`, formData);
       setResult(response.data);
-      fetchPortScanHistory();
+      
+      // Save to local history
+      const historyEntry = {
+        target: response.data.target,
+        open_ports: response.data.open_ports,
+        port_type: response.data.port_type,
+        timestamp: new Date().toISOString()
+      };
+      savePortScanToHistory(historyEntry);
     } catch (err) {
       setError(err.response?.data?.detail || 'Port scan failed');
     } finally {
