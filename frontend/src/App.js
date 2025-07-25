@@ -1026,15 +1026,28 @@ const WebsiteCheckerTab = () => {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    fetchSecurityHistory();
+    loadSecurityHistory();
   }, []);
 
-  const fetchSecurityHistory = async () => {
+  const loadSecurityHistory = () => {
     try {
-      const response = await axios.get(`${API}/security-history`);
-      setHistory(response.data.slice(0, 10));
+      const savedHistory = localStorage.getItem('websiteSecurityHistory');
+      if (savedHistory) {
+        setHistory(JSON.parse(savedHistory).slice(0, 10));
+      }
     } catch (err) {
-      console.error('Error fetching security history:', err);
+      console.error('Error loading security history:', err);
+    }
+  };
+
+  const saveSecurityToHistory = (securityData) => {
+    try {
+      const currentHistory = JSON.parse(localStorage.getItem('websiteSecurityHistory') || '[]');
+      const newHistory = [securityData, ...currentHistory].slice(0, 50); // Keep last 50
+      localStorage.setItem('websiteSecurityHistory', JSON.stringify(newHistory));
+      setHistory(newHistory.slice(0, 10)); // Show last 10
+    } catch (err) {
+      console.error('Error saving security history:', err);
     }
   };
 
