@@ -862,7 +862,14 @@ const MalwareScannerTab = () => {
       });
       
       setScanResult(response.data);
-      fetchScanHistory(); // Refresh history
+      
+      // Save to local history
+      const historyEntry = {
+        filename: response.data.filename,
+        risk_level: response.data.risk_level,
+        timestamp: new Date().toISOString()
+      };
+      saveScanToHistory(historyEntry);
     } catch (err) {
       setError(err.response?.data?.detail || 'Scan failed');
     } finally {
