@@ -1064,7 +1064,15 @@ const WebsiteCheckerTab = () => {
 
       const response = await axios.post(`${API}/check-website`, formData);
       setResult(response.data);
-      fetchSecurityHistory();
+      
+      // Save to local history
+      const historyEntry = {
+        url: response.data.url,
+        security_score: response.data.security_score,
+        https_valid: response.data.https_valid,
+        timestamp: new Date().toISOString()
+      };
+      saveSecurityToHistory(historyEntry);
     } catch (err) {
       setError(err.response?.data?.detail || 'Security check failed');
     } finally {
