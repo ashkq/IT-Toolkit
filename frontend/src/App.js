@@ -821,15 +821,28 @@ const MalwareScannerTab = () => {
   const [scanHistory, setScanHistory] = useState([]);
 
   useEffect(() => {
-    fetchScanHistory();
+    loadScanHistory();
   }, []);
 
-  const fetchScanHistory = async () => {
+  const loadScanHistory = () => {
     try {
-      const response = await axios.get(`${API}/scan-history`);
-      setScanHistory(response.data.slice(0, 10)); // Show last 10 scans
+      const savedHistory = localStorage.getItem('malwareScanHistory');
+      if (savedHistory) {
+        setScanHistory(JSON.parse(savedHistory).slice(0, 10));
+      }
     } catch (err) {
-      console.error('Error fetching scan history:', err);
+      console.error('Error loading scan history:', err);
+    }
+  };
+
+  const saveScanToHistory = (scanData) => {
+    try {
+      const currentHistory = JSON.parse(localStorage.getItem('malwareScanHistory') || '[]');
+      const newHistory = [scanData, ...currentHistory].slice(0, 50); // Keep last 50
+      localStorage.setItem('malwareScanHistory', JSON.stringify(newHistory));
+      setScanHistory(newHistory.slice(0, 10)); // Show last 10
+    } catch (err) {
+      console.error('Error saving scan history:', err);
     }
   };
 
