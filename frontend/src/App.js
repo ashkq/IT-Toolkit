@@ -1258,15 +1258,28 @@ const PortScannerTab = () => {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    fetchPortScanHistory();
+    loadPortScanHistory();
   }, []);
 
-  const fetchPortScanHistory = async () => {
+  const loadPortScanHistory = () => {
     try {
-      const response = await axios.get(`${API}/port-scan-history`);
-      setHistory(response.data.slice(0, 10));
+      const savedHistory = localStorage.getItem('portScanHistory');
+      if (savedHistory) {
+        setHistory(JSON.parse(savedHistory).slice(0, 10));
+      }
     } catch (err) {
-      console.error('Error fetching port scan history:', err);
+      console.error('Error loading port scan history:', err);
+    }
+  };
+
+  const savePortScanToHistory = (scanData) => {
+    try {
+      const currentHistory = JSON.parse(localStorage.getItem('portScanHistory') || '[]');
+      const newHistory = [scanData, ...currentHistory].slice(0, 50); // Keep last 50
+      localStorage.setItem('portScanHistory', JSON.stringify(newHistory));
+      setHistory(newHistory.slice(0, 10)); // Show last 10
+    } catch (err) {
+      console.error('Error saving port scan history:', err);
     }
   };
 
