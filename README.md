@@ -36,43 +36,35 @@ Your Complete IT Superhero Solution for security analysis, network diagnostics, 
 
 ## 🚀 Easy Installation
 
-### For Regular Users (Recommended)
+### **📥 For Users (Recommended)**
 **Just download and run - no technical knowledge required!**
 
-1. **Download the latest version:**
-   - **Windows**: Download `IT-Hero-Setup.exe`
-   - **macOS**: Download `IT-Hero.dmg`
-   - **Linux**: Download `IT-Hero.AppImage`
+1. **Download the installer for your operating system:**
+   - **🪟 Windows**: Download `IT-Hero-Setup.exe`
+   - **🍎 macOS**: Download `IT-Hero.dmg`
+   - **🐧 Linux**: Download `IT-Hero.AppImage`
 
-2. **Install and run:**
+2. **Install IT Hero:**
    - **Windows**: Double-click the `.exe` file and follow the installer
    - **macOS**: Open the `.dmg` file and drag IT Hero to Applications
    - **Linux**: Make the `.AppImage` executable and double-click
 
-3. **That's it!** IT Hero will start automatically and show your computer's real information.
+3. **Run IT Hero:**
+   - Find IT Hero in your applications or on your desktop
+   - Double-click to launch
+   - **That's it!** IT Hero opens automatically in your browser
 
-### For Developers (Advanced Setup)
-If you want to run from source code or contribute to development:
+### **✨ What Happens When You Run IT Hero:**
+- ✅ **No terminal windows** - everything runs in the background
+- ✅ **No technical setup** - just click and go
+- ✅ **Real system data** - shows YOUR computer's actual information
+- ✅ **Professional interface** - opens in your default browser
+- ✅ **All tools ready** - security scanning, network diagnostics, and more
 
-<details>
-<summary>Click to expand developer setup instructions</summary>
+---
 
-#### Prerequisites
-- Python 3.11+
-- Node.js 18+
-- MongoDB
-- Yarn package manager
-
-#### Installation Steps
-1. Clone the repository
-2. Install backend dependencies: `cd backend && pip install -r requirements.txt`
-3. Install frontend dependencies: `cd frontend && yarn install`
-4. Set up environment files (see `.env.example` files)
-5. Start MongoDB
-6. Run backend: `cd backend && uvicorn server:app --host 0.0.0.0 --port 8001`
-7. Run frontend: `cd frontend && yarn start`
-
-</details>
+### **🛠️ For Developers**
+Want to build the installer or contribute to development? See `INSTALLER_INSTRUCTIONS.md` for complete setup and build instructions.
 
 ## ⚙️ API Keys (Optional Enhancement)
 
