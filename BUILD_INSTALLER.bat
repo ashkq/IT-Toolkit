@@ -20,9 +20,17 @@ if not exist "assets\icon.png" (
     echo.
 )
 
+REM Clean up previous builds
+if exist "dist" rmdir /s /q dist
+if exist "node_modules" rmdir /s /q node_modules
+
+REM Install all dependencies fresh
+echo 📦 Installing dependencies...
+npm install
+
 REM Install desktop dependencies
 echo 📦 Installing desktop dependencies...
-npm install electron electron-builder express --save-dev
+npm install electron electron-builder express get-intrinsic side-channel side-channel-map qs --save-dev
 
 REM Build React app
 echo 🏗️ Building React application...
@@ -33,6 +41,10 @@ copy package.json package.json.backup
 
 REM Use desktop package.json for building
 copy package-desktop.json package.json
+
+REM Install desktop dependencies with the new package.json
+echo 📦 Installing desktop build dependencies...
+npm install
 
 REM Build desktop application
 echo 🔨 Building desktop executable...
@@ -51,15 +63,9 @@ echo    🪟 Windows: IT-Hero-Setup.exe
 echo    🍎 macOS: IT-Hero.dmg
 echo    🐧 Linux: IT-Hero.AppImage
 echo.
-echo 👥 WHAT USERS DO:
-echo 1. Download the appropriate file for their operating system
-echo 2. Double-click the downloaded file
-echo 3. Follow the installation prompts
-echo 4. IT Hero will be installed and ready to use!
+echo 🚀 UPLOAD THESE FILES TO GITHUB:
+echo    Just upload the files from frontend\dist\ to your GitHub Releases
+echo    Users can then download and install directly - no command line needed!
 echo.
-echo 🚀 The installed app will automatically:
-echo    - Start the backend server in the background
-echo    - Open IT Hero in their default browser
-echo    - No terminal windows or technical setup required!
 
 pause
