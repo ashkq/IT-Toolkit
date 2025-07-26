@@ -19,8 +19,9 @@
       "build/**/*",
       "electron-main.js",
       "preload.js",
-      "server/**/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      "!node_modules/**/test/**/*",
+      "!node_modules/**/tests/**/*"
     ],
     "extraResources": [
       {
@@ -30,11 +31,11 @@
     ],
     "mac": {
       "target": "dmg",
-      "icon": "assets/icon.icns"
+      "icon": "assets/icon.png"
     },
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.png"
     },
     "linux": {
       "target": "AppImage",
@@ -44,7 +45,9 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "installerIcon": "assets/icon.png",
+      "uninstallerIcon": "assets/icon.png"
     }
   },
   "devDependencies": {
