@@ -1,0 +1,14 @@
+🎨 PLACE YOUR APP ICON HERE
+============================
+
+To add your custom app icon:
+
+1. Save your logo as "icon.png" (512x512 pixels recommended)
+2. Place it in this folder: /app/frontend/assets/icon.png
+3. For best results, also create:
+   - icon.ico (for Windows)
+   - icon.icns (for macOS)
+4. Delete this text file
+5. Run the BUILD_INSTALLER script
+
+Your icon will appear on users' desktops and in their applications folder!
