@@ -23,9 +23,16 @@ if [ ! -f "assets/icon.png" ]; then
     echo ""
 fi
 
+# Clean up previous builds
+rm -rf dist node_modules
+
+# Install all dependencies fresh
+echo "📦 Installing dependencies..."
+npm install
+
 # Install desktop dependencies
 echo "📦 Installing desktop dependencies..."
-npm install electron electron-builder express --save-dev
+npm install electron electron-builder express get-intrinsic side-channel side-channel-map qs --save-dev
 
 # Build React app
 echo "🏗️ Building React application..."
@@ -37,18 +44,9 @@ cp package.json package.json.backup
 # Use desktop package.json for building
 cp package-desktop.json package.json
 
-# Create icon files for all platforms if PNG exists
-if [ -f "assets/icon.png" ]; then
-    echo "🎨 Converting icon for all platforms..."
-    
-    # For Windows (.ico) - you may need to install imagemagick
-    # convert assets/icon.png -resize 256x256 assets/icon.ico
-    
-    # For macOS (.icns) - you may need to install imagemagick
-    # convert assets/icon.png -resize 512x512 assets/icon.icns
-    
-    echo "   Note: Place icon.ico and icon.icns in assets/ for Windows and macOS"
-fi
+# Install desktop dependencies with the new package.json
+echo "📦 Installing desktop build dependencies..."
+npm install
 
 # Build desktop application
 echo "🔨 Building desktop executable..."
@@ -67,13 +65,7 @@ echo "   🪟 Windows: IT-Hero-Setup.exe"
 echo "   🍎 macOS: IT-Hero.dmg"
 echo "   🐧 Linux: IT-Hero.AppImage"
 echo ""
-echo "👥 WHAT USERS DO:"
-echo "1. Download the appropriate file for their operating system"
-echo "2. Double-click the downloaded file"
-echo "3. Follow the installation prompts"
-echo "4. IT Hero will be installed and ready to use!"
+echo "🚀 UPLOAD THESE FILES TO GITHUB:"
+echo "   Just upload the files from frontend/dist/ to your GitHub Releases"
+echo "   Users can then download and install directly - no command line needed!"
 echo ""
-echo "🚀 The installed app will automatically:"
-echo "   - Start the backend server in the background"
-echo "   - Open IT Hero in their default browser"
-echo "   - No terminal windows or technical setup required!"
