@@ -18,6 +18,9 @@ if not exist "assets\icon.png" (
     echo    Place your app icon as 'frontend\assets\icon.png' before building
     echo    This will be used as the desktop icon users see
     echo.
+) else (
+    echo 🎨 Converting icon for Windows...
+    python convert_icon.py
 )
 
 REM Clean up previous builds
