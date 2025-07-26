@@ -97,13 +97,22 @@ To enable enhanced scanning features, you can add API keys:
 - No personal data is collected or transmitted
 - Search history is stored locally on your device only
 
-## 🛠️ Building Your Own Executable
+## 🔧 Building the Installer
 
-Want to create your own custom build?
+**For developers who want to create the installer files:**
 
-1. Install development dependencies
-2. Run `yarn build-desktop`
-3. Find your executable in the `dist` folder
+1. **Add your app icon** to `frontend/assets/icon.png`
+2. **Run the build script:**
+   ```bash
+   # Linux/macOS
+   ./BUILD_INSTALLER.sh
+   
+   # Windows
+   BUILD_INSTALLER.bat
+   ```
+3. **Share the installer files** from `frontend/dist/` with users
+
+**Detailed instructions:** See `INSTALLER_INSTRUCTIONS.md`
 
 ## 🆘 Need Help?
 
