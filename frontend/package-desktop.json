@@ -2,6 +2,7 @@
   "name": "it-hero-desktop",
   "version": "1.0.0",
   "description": "IT Hero Security & Diagnostic Toolkit - Desktop Application",
+  "author": "IT Hero Team",
   "main": "electron-main.js",
   "scripts": {
     "electron": "electron .",
