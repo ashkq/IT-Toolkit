@@ -32,7 +32,8 @@
     ],
     "mac": {
       "target": "dmg",
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.png",
+      "category": "public.app-category.utilities"
     },
     "win": {
       "target": "nsis",
@@ -40,7 +41,8 @@
     },
     "linux": {
       "target": "AppImage",
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.png",
+      "category": "Utility"
     },
     "nsis": {
       "oneClick": false,
