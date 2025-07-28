@@ -19,15 +19,7 @@ if not exist "assets\icon.png" (
     echo    This will be used as the desktop icon users see
     echo.
 ) else (
-    echo 🎨 Found icon.png - will use for all platforms
-    echo    Installing Pillow for icon conversion...
-    pip install Pillow >nul 2>&1
-    if errorlevel 1 (
-        echo    ⚠️  Pillow installation failed, using PNG directly
-    ) else (
-        echo    Converting icon for Windows...
-        python convert_icon.py
-    )
+    echo ✅ Found icon.png - ready to build with your custom icon!
 )
 
 REM Clean up previous builds
@@ -58,6 +50,7 @@ npm install
 
 REM Build desktop application
 echo 🔨 Building desktop executable...
+echo    This may take a few minutes...
 npx electron-builder --publish=never
 
 REM Restore original package.json
@@ -69,13 +62,21 @@ echo 📁 Installer files created in 'frontend\dist' folder:
 echo.
 echo    📥 USERS DOWNLOAD THESE FILES:
 echo    ================================
-echo    🪟 Windows: IT-Hero-Setup.exe
-echo    🍎 macOS: IT-Hero.dmg
-echo    🐧 Linux: IT-Hero.AppImage
+if exist "dist\IT-Hero Setup.exe" (
+    echo    🪟 Windows: IT-Hero Setup.exe
+)
+if exist "dist\IT-Hero.dmg" (
+    echo    🍎 macOS: IT-Hero.dmg
+)
+if exist "dist\IT-Hero.AppImage" (
+    echo    🐧 Linux: IT-Hero.AppImage
+)
 echo.
 echo 🚀 UPLOAD THESE FILES TO GITHUB:
 echo    Just upload the files from frontend\dist\ to your GitHub Releases
 echo    Users can then download and install directly - no command line needed!
+echo.
+echo 🎨 Your custom icon will appear on users' desktops and applications!
 echo.
 
 pause
