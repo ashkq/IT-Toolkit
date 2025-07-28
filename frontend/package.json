@@ -62,6 +62,7 @@
       "build/**/*",
       "electron-main.js",
       "preload.js",
+      "assets/**/*",
       "node_modules/**/*"
     ],
     "extraResources": [
