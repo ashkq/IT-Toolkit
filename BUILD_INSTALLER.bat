@@ -19,8 +19,15 @@ if not exist "assets\icon.png" (
     echo    This will be used as the desktop icon users see
     echo.
 ) else (
-    echo 🎨 Converting icon for Windows...
-    python convert_icon.py
+    echo 🎨 Found icon.png - will use for all platforms
+    echo    Installing Pillow for icon conversion...
+    pip install Pillow >nul 2>&1
+    if errorlevel 1 (
+        echo    ⚠️  Pillow installation failed, using PNG directly
+    ) else (
+        echo    Converting icon for Windows...
+        python convert_icon.py
+    )
 )
 
 REM Clean up previous builds
