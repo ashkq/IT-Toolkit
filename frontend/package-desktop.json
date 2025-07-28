@@ -12,7 +12,7 @@
   },
   "build": {
     "appId": "com.ithero.security-toolkit",
-    "productName": "IT Hero",
+    "productName": "IT-Hero",
     "directories": {
       "output": "dist"
     },
